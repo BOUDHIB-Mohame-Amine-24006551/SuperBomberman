@@ -9,20 +9,20 @@
 
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.ProfileStatsController">
     <content>
-        <VBox spacing="20.0" styleClass="profile-container">
+        <VBox spacing="20.0" >
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
             </padding>
 
             <!-- En-tête du profil -->
-            <VBox alignment="CENTER" spacing="10.0" styleClass="profile-header">
+            <VBox alignment="CENTER" spacing="10.0">
                 <children>
-                    <Label fx:id="playerNameLabel" styleClass="profile-name" text="Nom du Joueur">
+                    <Label fx:id="playerNameLabel" text="Nom du Joueur">
                         <font>
                             <Font name="System Bold" size="28.0" />
                         </font>
                     </Label>
-                    <Label fx:id="rankLabel" styleClass="profile-rank" text="🥉 Débutant">
+                    <Label fx:id="rankLabel" text="🥉 Débutant">
                         <font>
                             <Font name="System Bold" size="18.0" />
                         </font>
@@ -47,7 +47,7 @@
             </VBox>
 
             <!-- Onglets pour les différentes sections -->
-            <TabPane prefHeight="255.0" prefWidth="630.0" styleClass="profile-tabs" tabClosingPolicy="UNAVAILABLE">
+            <TabPane prefHeight="255.0" prefWidth="630.0" tabClosingPolicy="UNAVAILABLE">
 
                 <!-- Onglet Statistiques Générales -->
                 <Tab text="📊 Statistiques Générales">
@@ -55,7 +55,7 @@
                         <VBox prefHeight="362.0" prefWidth="669.0" spacing="15.0">
                             <children>
                                 <!-- Résumé rapide -->
-                                <GridPane hgap="15.0" styleClass="stats-summary" vgap="10.0">
+                                <GridPane hgap="15.0" vgap="10.0">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="120.0" />
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="120.0" />
@@ -64,45 +64,45 @@
                                     </columnConstraints>
 
                                     <!-- Ligne 1 -->
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <VBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                         <children>
-                                            <Label styleClass="stat-label" text="🎮 PARTIES JOUÉES" />
-                                            <Label fx:id="totalGamesLabel" styleClass="stat-value-big" text="0" />
+                                            <Label text="🎮 PARTIES JOUÉES" />
+                                            <Label fx:id="totalGamesLabel" text="0" />
                                         </children>
                                     </VBox>
 
-                                    <VBox alignment="CENTER" styleClass="stat-card win" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                         <children>
-                                            <Label styleClass="stat-label" text="🏆 VICTOIRES" />
-                                            <Label fx:id="totalWinsLabel" styleClass="stat-value-big" text="0" />
+                                            <Label text="🏆 VICTOIRES" />
+                                            <Label fx:id="totalWinsLabel" text="0" />
                                         </children>
                                     </VBox>
 
-                                    <VBox alignment="CENTER" styleClass="stat-card loss" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                    <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="0">
                                         <children>
-                                            <Label styleClass="stat-label" text="💀 DÉFAITES" />
-                                            <Label fx:id="totalLossesLabel" styleClass="stat-value-big" text="0" />
+                                            <Label text="💀 DÉFAITES" />
+                                            <Label fx:id="totalLossesLabel" text="0" />
                                         </children>
                                     </VBox>
 
-                                    <VBox alignment="CENTER" styleClass="stat-card ratio" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                    <VBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="0">
                                         <children>
-                                            <Label styleClass="stat-label" text="📈 RATIO VICTOIRES" />
-                                            <Label fx:id="winRatioLabel" styleClass="stat-value-big" text="0%" />
+                                            <Label text="📈 RATIO VICTOIRES" />
+                                            <Label fx:id="winRatioLabel" text="0%" />
                                         </children>
                                     </VBox>
 
                                     <!-- Ligne 2 -->
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <VBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                         <children>
-                                            <Label styleClass="stat-label" text="⏱️ TEMPS DE JEU" />
-                                            <Label fx:id="totalPlayTimeLabel" styleClass="stat-value" text="0h 0m" />
+                                            <Label text="⏱️ TEMPS DE JEU" />
+                                            <Label fx:id="totalPlayTimeLabel" text="0h 0m" />
                                         </children>
                                     </VBox>
 
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                         <children>
-                                            <Label styleClass="stat-label" text="💣 BOMBES POSÉES" />
+                                            <Label text="💣 BOMBES POSÉES" />
                                             <Label fx:id="totalBombsLabel" styleClass="stat-value" text="0" />
                                         </children>
                                     </VBox>

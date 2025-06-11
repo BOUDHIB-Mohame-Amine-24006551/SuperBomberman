@@ -16,9 +16,9 @@
     </padding>
     
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Button fx:id="saveButton" text="Sauvegarder" onAction="#onSave"/>
-        <Button fx:id="loadButton" text="Charger" onAction="#onLoad"/>
-        <Button fx:id="clearButton" text="Effacer" onAction="#onClear"/>
+        <Button text="Sauvegarder" onAction="#onSave"/>
+        <Button text="Charger" onAction="#onLoad"/>
+        <Button text="Effacer" onAction="#onClear"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
