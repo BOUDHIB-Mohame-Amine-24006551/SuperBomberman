@@ -1,6 +1,7 @@
 package fr.univ.bomberman;
 
 import fr.univ.bomberman.controller.MenuController;
+import fr.univ.bomberman.controller.ProfileStatsController;
 import fr.univ.bomberman.model.*;
 import fr.univ.bomberman.view.GameRenderer;
 import fr.univ.bomberman.exceptions.BombermanException;
@@ -20,6 +21,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -332,22 +334,40 @@ public class BombermanApp extends Application {
     }
 
     public void startCanvasGameWithNames(String player1Name, String player2Name) {
-        try {
-            PlayerProfile profile1 = profileManager.loadProfile(player1Name);
-            String preferredTheme = profile1.getPreferredTheme();
+        gameStartTime = System.currentTimeMillis(); // Enregistrer le début
 
-            // ✅ CORRECTION 1: Initialiser le jeu avec des noms personnalisés
+        try {
+            PlayerProfile profile1 = null;
+
+            // Charger le profil si disponible
+            if (currentProfile != null && currentProfile.getPlayerName().equals(player1Name)) {
+                profile1 = currentProfile;
+            } else {
+                try {
+                    profile1 = profileManager.loadProfile(player1Name);
+                } catch (BombermanException e) {
+                    // Profil non trouvé, continuer sans profil
+                    System.out.println("Profil non trouvé pour " + player1Name);
+                }
+            }
+
+            String preferredTheme = "default";
+            if (profile1 != null) {
+                preferredTheme = profile1.getPreferredTheme();
+            }
+
+            // Initialiser le jeu
             game = new Game();
 
-            // ✅ CORRECTION 2: Créer le canvas AVANT le renderer
+            // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
             int canvasHeight = game.getBoard().getRows() * 40;
             canvas = new Canvas(canvasWidth, canvasHeight);
 
-            // ✅ CORRECTION 3: Créer le renderer APRÈS avoir créé le canvas
+            // Créer le renderer
             renderer = new GameRenderer(canvas);
 
-            // ✅ CORRECTION 4: Appliquer le thème préféré si disponible
+            // Appliquer le thème préféré
             if (!"default".equals(preferredTheme)) {
                 renderer.changeTheme(preferredTheme);
             }
@@ -482,7 +502,7 @@ public class BombermanApp extends Application {
         if (game.isGameOver()) {
             if (keyCode == KeyCode.R) {
                 // ✅ NOUVEAU: Enregistrer la partie avant de redémarrer
-                recordGameSession();
+                recordGameSessionWithDuration();
 
                 // Redémarrer avec les mêmes noms
                 java.util.List<Player> currentPlayers = game.getPlayers();
@@ -492,7 +512,7 @@ public class BombermanApp extends Application {
                 return;
             } else if (keyCode == KeyCode.ESCAPE) {
                 // ✅ NOUVEAU: Enregistrer la partie avant de quitter
-                recordGameSession();
+                recordGameSessionWithDuration();
                 showMenu();
                 return;
             }
@@ -532,15 +552,18 @@ public class BombermanApp extends Application {
                 break;
 
             case R:
-                // Redémarrer avec les mêmes noms
+                // Enregistrer avant de redémarrer
+                recordGameSessionWithDuration();
+
                 java.util.List<Player> currentPlayers = game.getPlayers();
                 String name1 = currentPlayers.size() > 0 ? currentPlayers.get(0).getName() : "Joueur 1";
                 String name2 = currentPlayers.size() > 1 ? currentPlayers.get(1).getName() : "Joueur 2";
-
                 startCanvasGameWithNames(name1, name2);
                 break;
 
             case ESCAPE:
+                // Enregistrer avant de quitter
+                recordGameSessionWithDuration();
                 showMenu();
                 return;
 
@@ -549,7 +572,6 @@ public class BombermanApp extends Application {
                 break;
 
             default:
-                // Aucune action pour les autres touches
                 break;
         }
 
@@ -560,11 +582,33 @@ public class BombermanApp extends Application {
      * Affiche une boîte de dialogue d'erreur
      */
     private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showWarning(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Affiche une boîte de dialogue de confirmation
+     * @return true si l'utilisateur a cliqué sur OK
+     */
+    private boolean showConfirmation(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 
     private void showCooldownFeedback(int playerIndex) {
@@ -1548,6 +1592,174 @@ public class BombermanApp extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private PlayerProfile currentProfile; // Profil actuel sélectionné
+    private long gameStartTime; // Pour calculer la durée des parties
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Définit le profil actuel
+     */
+    public void setCurrentProfile(PlayerProfile profile) {
+        this.currentProfile = profile;
+
+        // Appliquer les préférences du profil
+        if (profile != null) {
+            loadPlayerPreferences(profile.getPlayerName());
+        }
+    }
+
+    public PlayerProfile getCurrentProfile() {
+        return currentProfile;
+    }
+
+    public void startCanvasGameWithProfile() {
+        if (currentProfile != null) {
+            // Utiliser le profil pour le joueur 1
+            startCanvasGameWithNames(currentProfile.getPlayerName(), "Adversaire");
+        } else {
+            // Fallback vers la méthode normale
+            startCanvasGame();
+        }
+    }
+
+    private void recordGameSessionWithDuration() {
+        if (game == null || game.getPlayers().isEmpty()) return;
+
+        try {
+            long gameDuration = System.currentTimeMillis() - gameStartTime;
+
+            for (Player player : game.getPlayers()) {
+                if (!(player instanceof BotPlayer)) { // Seulement les joueurs humains
+
+                    // Charger ou créer le profil
+                    PlayerProfile profile;
+                    try {
+                        profile = profileManager.loadProfile(player.getName());
+                    } catch (BombermanException e) {
+                        // Créer un nouveau profil si il n'existe pas
+                        profile = new PlayerProfile(player.getName());
+                    }
+
+                    // Créer une session détaillée
+                    GameSession session = new GameSession();
+                    session.setStartTime(java.time.LocalDateTime.now().minusSeconds(gameDuration / 1000));
+                    session.setDurationSeconds((int)(gameDuration / 1000));
+                    session.setGameMode(game.getGameMode());
+                    session.setPlayersCount(game.getPlayerCount());
+                    session.setBotGame(game.hasBots());
+
+                    if (game.hasBots()) {
+                        BotPlayer bot = game.getBot();
+                        session.setBotDifficulty(bot != null ? bot.getDifficulty() : 2);
+                    }
+
+                    // Déterminer le résultat
+                    Player winner = game.getWinner();
+                    session.setWon(winner != null && winner.equals(player));
+                    session.setWinnerName(winner != null ? winner.getName() : "Égalité");
+
+                    // Statistiques estimées
+                    session.setBombsPlaced(estimateBombsForPlayer(player));
+                    session.setEliminationsDealt(estimateEliminationsForPlayer(player));
+                    session.setDeaths(player.isEliminated() ? 1 : 0);
+
+                    session.finalize();
+
+                    // Enregistrer la session dans le profil
+                    profileManager.recordCustomGameSession(player.getName(), session);
+
+                    // Mettre à jour le profil si c'est le profil actuel
+                    if (currentProfile != null && currentProfile.getPlayerName().equals(player.getName())) {
+                        currentProfile = profileManager.loadProfile(player.getName());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'enregistrement détaillé: " + e.getMessage());
+        }
+    }
+
+    public void showCurrentProfileStats() {
+        if (currentProfile == null) {
+            showError("Aucun profil", "Aucun profil n'est actuellement sélectionné.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fr/univ/bomberman/fxml/profile/stats.fxml"));
+            Parent root = loader.load();
+
+            ProfileStatsController controller = loader.getController();
+            controller.setProfile(currentProfile);
+
+            Stage stage = new Stage();
+            stage.setTitle("Statistiques - " + currentProfile.getPlayerName());
+            stage.setScene(new Scene(root, 800, 600));
+            stage.setResizable(true);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Erreur", "Impossible d'ouvrir les statistiques: " + e.getMessage());
+        }
+    }
+
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    /**
+     * ✅ NOUVELLE MÉTHODE: Affiche un résumé rapide du profil actuel
+     */
+    public void showQuickProfileSummary() {
+        if (currentProfile == null) {
+            showInfo("Aucun profil",
+                    "❌ Aucun profil sélectionné\n\n" +
+                            "💡 Sélectionnez un profil pour sauvegarder vos statistiques !");
+            return;
+        }
+
+        StringBuilder summary = new StringBuilder();
+        summary.append("👤 PROFIL ACTUEL\n");
+        summary.append("═══════════════════\n\n");
+        summary.append("🏷️ Nom: ").append(currentProfile.getPlayerName()).append("\n");
+        summary.append("🏆 Rang: ").append(currentProfile.getRank().getDisplayName()).append("\n");
+        summary.append("📊 Niveau: ").append(currentProfile.getActivityLevel().getDisplayName()).append("\n\n");
+
+        summary.append("📈 STATISTIQUES:\n");
+        summary.append("🎮 Parties jouées: ").append(currentProfile.getTotalGamesPlayed()).append("\n");
+        summary.append("✅ Victoires: ").append(currentProfile.getTotalWins()).append("\n");
+        summary.append("📊 Taux de victoire: ").append(String.format("%.1f%%", currentProfile.getWinRatio())).append("\n");
+        summary.append("⏱️ Temps de jeu: ").append(currentProfile.getFormattedTotalPlayTime()).append("\n\n");
+
+        summary.append("🎨 PRÉFÉRENCES:\n");
+        summary.append("🖼️ Thème: ").append(currentProfile.getPreferredTheme()).append("\n");
+        summary.append("🔊 Son: ").append(currentProfile.isSoundEnabled() ? "Activé" : "Désactivé").append("\n");
+        summary.append("🤖 Difficulté bot: ").append(getDifficultyName(currentProfile.getPreferredBotDifficulty()));
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Profil Actuel");
+        alert.setHeaderText("📋 Résumé de votre profil");
+        alert.setContentText(summary.toString());
+        alert.getDialogPane().setPrefWidth(400);
+        alert.showAndWait();
+    }
+
+    /**
+     * ✅ MÉTHODE UTILITAIRE: Obtient le nom de la difficulté
+     */
+    private String getDifficultyName(int difficulty) {
+        switch (difficulty) {
+            case 1: return "Facile";
+            case 2: return "Moyen";
+            case 3: return "Difficile";
+            default: return "Moyen";
+        }
     }
 
 }

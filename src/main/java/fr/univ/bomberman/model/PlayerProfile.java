@@ -39,6 +39,9 @@ public class PlayerProfile {
     private boolean soundEnabled;
     private int preferredBotDifficulty;
 
+    // Rang du joueur
+    private Rank rank;
+
     /**
      * Constructeur par défaut pour la désérialisation JSON
      */
@@ -53,15 +56,37 @@ public class PlayerProfile {
         this.preferredTheme = "default";
         this.soundEnabled = true;
         this.preferredBotDifficulty = 2;
+        this.rank = Rank.BRONZE; // Rang initial
     }
 
     /**
      * Constructeur avec nom de joueur
      */
     public PlayerProfile(String playerName) {
-        this();
         this.playerName = playerName;
+        this.creationDate = LocalDateTime.now();
+        this.lastPlayDate = LocalDateTime.now();
+
+        // Initialisation du rang
+        this.rank = Rank.BRONZE;
+
+        // Initialisation des préférences
+        this.preferredTheme = "default";
+        this.soundEnabled = true;
+        this.preferredBotDifficulty = 2;
+
+        // Initialisation des statistiques
+        this.classicModeStats = new GameModeStats();
+        this.battleRoyaleStats = new GameModeStats();
+        this.botModeStats = new GameModeStats();
+        this.ctfModeStats = new GameModeStats();
+        this.recentGames = new ArrayList<>();
+        this.totalPlayTimeSeconds = 0;
     }
+
+    // ============================================================================
+    // MÉTHODES DE GESTION DES PARTIES
+    // ============================================================================
 
     /**
      * Enregistre une nouvelle partie terminée
@@ -91,6 +116,47 @@ public class PlayerProfile {
 
         // Mettre à jour la date de dernière partie
         this.lastPlayDate = LocalDateTime.now();
+
+        // Mettre à jour le rang si victoire
+        if (session.isWon()) {
+            Rank oldRank = getRank();
+            updateRank();
+
+            // Log de promotion si applicable
+            if (getRank().isHigherThan(oldRank)) {
+                System.out.println("🎉 PROMOTION ! " + playerName +
+                        " passe du rang " + oldRank.getDisplayName() +
+                        " au rang " + getRank().getDisplayName() + " !");
+            }
+        }
+    }
+
+    /**
+     * Met à jour le profil après une partie
+     */
+    public void updateAfterGame(boolean won, GameMode gameMode, int durationSeconds) {
+        // Mettre à jour la date de dernière partie
+        this.lastPlayDate = LocalDateTime.now();
+
+        // Ajouter le temps de jeu
+        this.totalPlayTimeSeconds += durationSeconds;
+
+        // Mettre à jour les statistiques selon le mode
+        GameModeStats stats = getStatsForMode(gameMode);
+        if (stats != null) {
+            stats.addGame(won);
+        }
+
+        // Mettre à jour le rang si victoire
+        if (won) {
+            Rank oldRank = getRank();
+            updateRank();
+
+            // Log de promotion si applicable
+            if (getRank().isHigherThan(oldRank)) {
+                System.out.println("🎉 " + playerName + " a été promu au rang " + getRank().getDisplayName() + " !");
+            }
+        }
     }
 
     /**
@@ -101,12 +167,20 @@ public class PlayerProfile {
             case REAL_TIME:
             case TURN_BASED:
                 return classicModeStats;
+            case BATTLE_ROYALE:
+                return battleRoyaleStats;
+            case BOT_GAME:
+                return botModeStats;
             case CAPTURE_THE_FLAG:
                 return ctfModeStats;
             default:
                 return classicModeStats;
         }
     }
+
+    // ============================================================================
+    // MÉTHODES DE CALCUL DES STATISTIQUES
+    // ============================================================================
 
     /**
      * Calcule le ratio victoires/défaites
@@ -132,21 +206,169 @@ public class PlayerProfile {
         return (double) totalEliminatonsDealt / totalDeaths;
     }
 
-    /**
-     * Obtient le rang du joueur basé sur ses performances
-     */
-    public PlayerRank getRank() {
-        double winRate = getWinRatio();
-        int gamesPlayed = getTotalGamesPlayed();
+    // ============================================================================
+    // MÉTHODES DE GESTION DU RANG
+    // ============================================================================
 
-        if (gamesPlayed < 5) return PlayerRank.ROOKIE;
-        if (winRate >= 80 && gamesPlayed >= 50) return PlayerRank.LEGEND;
-        if (winRate >= 70 && gamesPlayed >= 30) return PlayerRank.MASTER;
-        if (winRate >= 60 && gamesPlayed >= 20) return PlayerRank.EXPERT;
-        if (winRate >= 50 && gamesPlayed >= 10) return PlayerRank.ADVANCED;
-        if (winRate >= 30) return PlayerRank.INTERMEDIATE;
-        return PlayerRank.BEGINNER;
+    /**
+     * Obtient le rang actuel du joueur
+     */
+    public Rank getRank() {
+        if (rank == null) {
+            updateRank();
+        }
+        return rank;
     }
+
+    /**
+     * Définit le rang du joueur
+     */
+    public void setRank(Rank rank) {
+        this.rank = rank;
+    }
+
+    /**
+     * Met à jour le rang basé sur le nombre total de victoires
+     */
+    public void updateRank() {
+        this.rank = Rank.calculateRank(getTotalWins());
+    }
+
+    /**
+     * Vérifie si le joueur peut être promu au rang supérieur
+     */
+    public boolean canBePromoted() {
+        Rank currentRank = getRank();
+        Rank calculatedRank = Rank.calculateRank(getTotalWins());
+        return calculatedRank.isHigherThan(currentRank);
+    }
+
+    /**
+     * Obtient les informations de progression vers le prochain rang
+     */
+    public String getRankProgressInfo() {
+        return getRank().getFormattedProgressInfo(getTotalWins());
+    }
+
+    /**
+     * Obtient une barre de progression vers le prochain rang
+     */
+    public String getRankProgressBar() {
+        return getRank().getProgressBar(getTotalWins(), 20);
+    }
+
+    /**
+     * Obtient le pourcentage de progression vers le prochain rang
+     */
+    public double getRankProgressPercentage() {
+        return getRank().getProgressToNextRank(getTotalWins());
+    }
+
+    /**
+     * Vérifie si le joueur a atteint le rang maximum
+     */
+    public boolean hasMaxRank() {
+        return getRank() == Rank.DIAMOND;
+    }
+
+    /**
+     * Obtient le nombre de victoires nécessaires pour le prochain rang
+     */
+    public int getWinsToNextRank() {
+        return getRank().getWinsToNextRank(getTotalWins());
+    }
+
+    /**
+     * Obtient le rang sous forme de string pour la sauvegarde
+     */
+    public String getRankAsString() {
+        return getRank().name();
+    }
+
+    /**
+     * Définit le rang depuis une string lors du chargement
+     */
+    public void setRankFromString(String rankString) {
+        this.rank = Rank.fromString(rankString);
+    }
+
+    // ============================================================================
+    // MÉTHODES DE GESTION DE L'ACTIVITÉ
+    // ============================================================================
+
+    /**
+     * Obtient le niveau d'activité du joueur
+     */
+    public ActivityLevel getActivityLevel() {
+        return ActivityLevel.calculateActivityLevel(getTotalGamesPlayed());
+    }
+
+    /**
+     * Obtient les informations de progression d'activité
+     */
+    public String getActivityProgressInfo() {
+        ActivityLevel currentLevel = getActivityLevel();
+        ActivityLevel nextLevel = currentLevel.getNextLevel();
+
+        if (nextLevel == currentLevel) {
+            return "🏆 Niveau d'activité maximum atteint !";
+        }
+
+        int gamesNeeded = currentLevel.getGamesToNextLevel(getTotalGamesPlayed());
+        return String.format("Prochain niveau: %s (%d parties nécessaires)",
+                nextLevel.getDisplayName(), gamesNeeded);
+    }
+
+    // ============================================================================
+    // MÉTHODES UTILITAIRES
+    // ============================================================================
+
+    /**
+     * Duplique ce profil avec un nouveau nom
+     */
+    public PlayerProfile duplicate(String newName) {
+        PlayerProfile duplicated = new PlayerProfile(newName);
+
+        // Copier les préférences
+        duplicated.setPreferredTheme(this.preferredTheme);
+        duplicated.setSoundEnabled(this.soundEnabled);
+        duplicated.setPreferredBotDifficulty(this.preferredBotDifficulty);
+
+        // Nouvelle date de création
+        duplicated.creationDate = LocalDateTime.now();
+        duplicated.lastPlayDate = LocalDateTime.now();
+
+        return duplicated;
+    }
+
+    /**
+     * Met à jour la date de dernière connexion
+     */
+    public void updateLastPlayDate() {
+        this.lastPlayDate = LocalDateTime.now();
+    }
+
+    /**
+     * Vérifie si le profil a été utilisé récemment
+     */
+    public boolean isRecentlyUsed(int days) {
+        return java.time.Duration.between(lastPlayDate, LocalDateTime.now()).toDays() <= days;
+    }
+
+    /**
+     * Obtient une description courte du profil
+     */
+    public String getShortDescription() {
+        return String.format("%s (%s) - %d parties, %.1f%% victoires",
+                playerName,
+                getRank().getDisplayName(),
+                getTotalGamesPlayed(),
+                getWinRatio());
+    }
+
+    // ============================================================================
+    // MÉTHODES DE FORMATAGE
+    // ============================================================================
 
     /**
      * Formate la date de création pour l'affichage
@@ -175,58 +397,147 @@ public class PlayerProfile {
     // GETTERS ET SETTERS
     // ============================================================================
 
-    public String getPlayerName() { return playerName; }
-    public void setPlayerName(String playerName) { this.playerName = playerName; }
+    public String getPlayerName() {
+        return playerName;
+    }
 
-    public LocalDateTime getCreationDate() { return creationDate; }
-    public void setCreationDate(LocalDateTime creationDate) { this.creationDate = creationDate; }
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
 
-    public LocalDateTime getLastPlayDate() { return lastPlayDate; }
-    public void setLastPlayDate(LocalDateTime lastPlayDate) { this.lastPlayDate = lastPlayDate; }
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
 
-    public int getTotalGamesPlayed() { return totalGamesPlayed; }
-    public void setTotalGamesPlayed(int totalGamesPlayed) { this.totalGamesPlayed = totalGamesPlayed; }
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 
-    public int getTotalWins() { return totalWins; }
-    public void setTotalWins(int totalWins) { this.totalWins = totalWins; }
+    public LocalDateTime getLastPlayDate() {
+        return lastPlayDate;
+    }
 
-    public int getTotalLosses() { return totalLosses; }
-    public void setTotalLosses(int totalLosses) { this.totalLosses = totalLosses; }
+    public void setLastPlayDate(LocalDateTime lastPlayDate) {
+        this.lastPlayDate = lastPlayDate;
+    }
 
-    public int getTotalBombsPlaced() { return totalBombsPlaced; }
-    public void setTotalBombsPlaced(int totalBombsPlaced) { this.totalBombsPlaced = totalBombsPlaced; }
+    public int getTotalGamesPlayed() {
+        return totalGamesPlayed;
+    }
 
-    public int getTotalEliminatonsDealt() { return totalEliminatonsDealt; }
-    public void setTotalEliminatonsDealt(int totalEliminatonsDealt) { this.totalEliminatonsDealt = totalEliminatonsDealt; }
+    public void setTotalGamesPlayed(int totalGamesPlayed) {
+        this.totalGamesPlayed = totalGamesPlayed;
+    }
 
-    public int getTotalDeaths() { return totalDeaths; }
-    public void setTotalDeaths(int totalDeaths) { this.totalDeaths = totalDeaths; }
+    public int getTotalWins() {
+        return totalWins;
+    }
 
-    public long getTotalPlayTimeSeconds() { return totalPlayTimeSeconds; }
-    public void setTotalPlayTimeSeconds(long totalPlayTimeSeconds) { this.totalPlayTimeSeconds = totalPlayTimeSeconds; }
+    public void setTotalWins(int totalWins) {
+        this.totalWins = totalWins;
+    }
 
-    public GameModeStats getClassicModeStats() { return classicModeStats; }
-    public void setClassicModeStats(GameModeStats classicModeStats) { this.classicModeStats = classicModeStats; }
+    public int getTotalLosses() {
+        return totalLosses;
+    }
 
-    public GameModeStats getBattleRoyaleStats() { return battleRoyaleStats; }
-    public void setBattleRoyaleStats(GameModeStats battleRoyaleStats) { this.battleRoyaleStats = battleRoyaleStats; }
+    public void setTotalLosses(int totalLosses) {
+        this.totalLosses = totalLosses;
+    }
 
-    public GameModeStats getBotModeStats() { return botModeStats; }
-    public void setBotModeStats(GameModeStats botModeStats) { this.botModeStats = botModeStats; }
+    public int getTotalBombsPlaced() {
+        return totalBombsPlaced;
+    }
 
-    public GameModeStats getCtfModeStats() { return ctfModeStats; }
-    public void setCtfModeStats(GameModeStats ctfModeStats) { this.ctfModeStats = ctfModeStats; }
+    public void setTotalBombsPlaced(int totalBombsPlaced) {
+        this.totalBombsPlaced = totalBombsPlaced;
+    }
 
-    public List<GameSession> getRecentGames() { return recentGames; }
-    public void setRecentGames(List<GameSession> recentGames) { this.recentGames = recentGames; }
+    public int getTotalEliminatonsDealt() {
+        return totalEliminatonsDealt;
+    }
 
-    public String getPreferredTheme() { return preferredTheme; }
-    public void setPreferredTheme(String preferredTheme) { this.preferredTheme = preferredTheme; }
+    public void setTotalEliminatonsDealt(int totalEliminatonsDealt) {
+        this.totalEliminatonsDealt = totalEliminatonsDealt;
+    }
 
-    public boolean isSoundEnabled() { return soundEnabled; }
-    public void setSoundEnabled(boolean soundEnabled) { this.soundEnabled = soundEnabled; }
+    public int getTotalDeaths() {
+        return totalDeaths;
+    }
 
-    public int getPreferredBotDifficulty() { return preferredBotDifficulty; }
-    public void setPreferredBotDifficulty(int preferredBotDifficulty) { this.preferredBotDifficulty = preferredBotDifficulty; }
+    public void setTotalDeaths(int totalDeaths) {
+        this.totalDeaths = totalDeaths;
+    }
+
+    public long getTotalPlayTimeSeconds() {
+        return totalPlayTimeSeconds;
+    }
+
+    public void setTotalPlayTimeSeconds(long totalPlayTimeSeconds) {
+        this.totalPlayTimeSeconds = totalPlayTimeSeconds;
+    }
+
+    public GameModeStats getClassicModeStats() {
+        return classicModeStats;
+    }
+
+    public void setClassicModeStats(GameModeStats classicModeStats) {
+        this.classicModeStats = classicModeStats;
+    }
+
+    public GameModeStats getBattleRoyaleStats() {
+        return battleRoyaleStats;
+    }
+
+    public void setBattleRoyaleStats(GameModeStats battleRoyaleStats) {
+        this.battleRoyaleStats = battleRoyaleStats;
+    }
+
+    public GameModeStats getBotModeStats() {
+        return botModeStats;
+    }
+
+    public void setBotModeStats(GameModeStats botModeStats) {
+        this.botModeStats = botModeStats;
+    }
+
+    public GameModeStats getCtfModeStats() {
+        return ctfModeStats;
+    }
+
+    public void setCtfModeStats(GameModeStats ctfModeStats) {
+        this.ctfModeStats = ctfModeStats;
+    }
+
+    public List<GameSession> getRecentGames() {
+        return recentGames;
+    }
+
+    public void setRecentGames(List<GameSession> recentGames) {
+        this.recentGames = recentGames;
+    }
+
+    public String getPreferredTheme() {
+        return preferredTheme;
+    }
+
+    public void setPreferredTheme(String preferredTheme) {
+        this.preferredTheme = preferredTheme;
+    }
+
+    public boolean isSoundEnabled() {
+        return soundEnabled;
+    }
+
+    public void setSoundEnabled(boolean soundEnabled) {
+        this.soundEnabled = soundEnabled;
+    }
+
+    public int getPreferredBotDifficulty() {
+        return preferredBotDifficulty;
+    }
+
+    public void setPreferredBotDifficulty(int preferredBotDifficulty) {
+        this.preferredBotDifficulty = preferredBotDifficulty;
+    }
 }
-
