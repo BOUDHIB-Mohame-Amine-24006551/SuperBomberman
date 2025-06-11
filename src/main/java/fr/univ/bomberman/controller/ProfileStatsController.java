@@ -1,4 +1,4 @@
-// FILE: src/main/java/fr/univ/bomberman/controller/ProfileStatsController.java
+
 package fr.univ.bomberman.controller;
 
 import fr.univ.bomberman.model.PlayerProfile;
@@ -150,19 +150,6 @@ public class ProfileStatsController {
                 }
             }
         });
-    }
-
-    /**
-     * Charge et affiche un profil de joueur
-     */
-    public void loadProfile(String playerName) {
-        try {
-            currentProfile = profileManager.loadProfile(playerName);
-            displayProfile();
-
-        } catch (BombermanException e) {
-            showError("Erreur de chargement", "Impossible de charger le profil: " + e.getMessage());
-        }
     }
 
     /**
@@ -450,12 +437,4 @@ public class ProfileStatsController {
         displayProfile();
     }
 
-    /**
-     * Actualise l'affichage du profil
-     */
-    public void refreshProfile() {
-        if (currentProfile != null) {
-            loadProfile(currentProfile.getPlayerName());
-        }
-    }
 }

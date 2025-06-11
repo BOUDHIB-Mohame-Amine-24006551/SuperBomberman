@@ -8,14 +8,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * Contrôleur pour l'éditeur de niveaux (squelette).
@@ -24,9 +24,9 @@ public class LevelEditorController {
     private static final int GRID_WIDTH = 15;
     private static final int GRID_HEIGHT = 13;
     private static final int CELL_SIZE = 40;
+    private static final Logger LOGGER = Logger.getLogger(LevelEditorController.class.getName());
 
     @FXML private GridPane gridPane;
-    @FXML private ToggleGroup tileTypeGroup;
     @FXML private RadioButton emptyRadio;
     @FXML private RadioButton wallRadio;
     @FXML private RadioButton destructibleRadio;
@@ -40,6 +40,14 @@ public class LevelEditorController {
     private Image voidImage;
     private boolean isDrawing = false;
 
+    private Image chargerImage(String chemin) {
+        InputStream stream = getClass().getResourceAsStream(chemin);
+        if (stream == null) {
+            throw new RuntimeException("Image introuvable : " + chemin);
+        }
+        return new Image(stream);
+    }
+
     /**
      * Initialisation du contrôleur de l'éditeur de niveaux.
      * Prépare la zone d'édition.
@@ -48,14 +56,17 @@ public class LevelEditorController {
     public void initialize() {
         // Charger les images
         try {
-            groundImage = new Image(getClass().getResourceAsStream("/fr/univ/bomberman/image/default/ground.png"));
-            wallImage = new Image(getClass().getResourceAsStream("/fr/univ/bomberman/image/default/wall.png"));
-            brickImage = new Image(getClass().getResourceAsStream("/fr/univ/bomberman/image/default/brick.png"));
-            voidImage = new Image(getClass().getResourceAsStream("/fr/univ/bomberman/image/default/void.png"));
+            groundImage = chargerImage("/fr/univ/bomberman/image/default/ground.png");
+            wallImage = chargerImage("/fr/univ/bomberman/image/default/wall.png");
+            brickImage = chargerImage("/fr/univ/bomberman/image/default/brick.png");
+            voidImage = chargerImage("/fr/univ/bomberman/image/default/void.png");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des images: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur lors du chargement des images", e);
+            // Optionnel : afficher une alerte à l'utilisateur
+            afficherErreurChargement();
+            return; // Arrêter l'initialisation si les images sont critiques
         }
-        
+
         grid = new int[GRID_HEIGHT][GRID_WIDTH];
         createGrid();
         
@@ -256,6 +267,14 @@ public class LevelEditorController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void afficherErreurChargement() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText("Erreur de chargement");
+        alert.setContentText("Impossible de charger les images nécessaires au jeu.");
         alert.showAndWait();
     }
 }

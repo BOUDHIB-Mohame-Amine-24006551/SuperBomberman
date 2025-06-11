@@ -114,12 +114,12 @@
 
                         <VBox alignment="CENTER" spacing="6.0">
                             <children>
-                                <Button fx:id="botButton" onAction="#onBotMode" styleClass="mode-button-bot" text="DÉFIER L'IA">
+                                <Button onAction="#onBotMode" styleClass="mode-button-bot" text="DÉFIER L'IA">
                                     <font>
                                         <Font name="System Bold" size="10.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="botTutorialButton" onAction="#onBotTutorial" styleClass="tutorial-button" text="📖 Tutoriel">
+                                <Button onAction="#onBotTutorial" styleClass="tutorial-button" text="📖 Tutoriel">
                                     <font>
                                         <Font size="8.0" />
                                     </font>
@@ -208,12 +208,12 @@
 
                         <VBox alignment="CENTER" spacing="6.0">
                             <children>
-                                <Button fx:id="ctfButton" onAction="#onCTFMode" styleClass="mode-button-ctf" text="CAPTURE THE FLAG">
+                                <Button onAction="#onCTFMode" styleClass="mode-button-ctf" text="CAPTURE THE FLAG">
                                     <font>
                                         <Font name="System Bold" size="10.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="ctfTutorialButton" onAction="#onCTFTutorial" styleClass="tutorial-button" text="📖 Guide CTF">
+                                <Button onAction="#onCTFTutorial" styleClass="tutorial-button" text="📖 Guide CTF">
                                     <font>
                                         <Font size="8.0" />
                                     </font>

@@ -1,4 +1,3 @@
-// FILE: src/main/java/fr/univ/bomberman/controller/ProfileSelectionController.java
 package fr.univ.bomberman.controller;
 
 import fr.univ.bomberman.utils.ProfileManager;
@@ -26,7 +25,7 @@ import java.util.Optional;
  */
 public class ProfileSelectionController {
 
-    // Composants FXML correspondant exactement au fichier profile_selection.fxml
+    // FXML relier au profile_selection.fxml
     @FXML private TableView<ProfileData> profilesTable;
     @FXML private TableColumn<ProfileData, String> nameColumn;
     @FXML private TableColumn<ProfileData, String> rankColumn;
@@ -77,13 +76,33 @@ public class ProfileSelectionController {
         }
 
         // Getters pour JavaFX
-        public String getName() { return name; }
-        public String getRank() { return rank; }
-        public Integer getGamesPlayed() { return gamesPlayed; }
-        public String getWinRate() { return winRate; }
-        public String getCreationDate() { return creationDate; }
-        public String getLastPlay() { return lastPlay; }
-        public PlayerProfile getPlayerProfile() { return playerProfile; }
+        public String getName() {
+            return name;
+        }
+
+        public String getRank() {
+            return rank;
+        }
+
+        public Integer getGamesPlayed() {
+            return gamesPlayed;
+        }
+
+        public String getWinRate() {
+            return winRate;
+        }
+
+        public String getCreationDate() {
+            return creationDate;
+        }
+
+        public String getLastPlay() {
+            return lastPlay;
+        }
+
+        public PlayerProfile getPlayerProfile() {
+            return playerProfile;
+        }
     }
 
     /**
@@ -499,12 +518,6 @@ public class ProfileSelectionController {
         return profileSelected;
     }
 
-    /**
-     * @return le nom du profil sélectionné
-     */
-    public String getSelectedProfileName() {
-        return selectedProfile != null ? selectedProfile.getName() : null;
-    }
 
     /**
      * Retourne le profil sélectionné sous forme de PlayerProfile

@@ -26,7 +26,6 @@ public class GameModeController {
     @FXML private Button fourPlayerButton;
     @FXML private Button settingsButton;
     @FXML private Button themeButton;
-    @FXML private Button playerNamesButton;
     @FXML private Button backButton;
     @FXML private Button quitButton;
     @FXML private Button selectProfileButton;
@@ -111,7 +110,7 @@ public class GameModeController {
      * Lance le mode 4 joueurs (Bataille Royale)
      */
     @FXML
-    private void onFourPlayerMode(ActionEvent event) {
+    private void onFourPlayerMode() {
         try {
             System.out.println("Lancement du mode 4 joueurs - Bataille Royale");
 
@@ -173,70 +172,14 @@ public class GameModeController {
         themeAlert.setTitle("🎨 Thèmes visuels");
         themeAlert.setHeaderText("Changement de thème");
         themeAlert.setContentText("🎨 Thèmes disponibles:\n" +
-                "• Default - Thème classique\n" +
-                "• Pokemon - Personnages Pokemon\n\n" +
+                "Default - Thème classique\n" +
+                "Pokemon - Personnages Pokemon\n\n" +
                 "💡 Changez de thème en jeu avec la touche T\n" +
                 "🖼️ Ajoutez vos propres images dans:\n" +
                 "resources/fr/univ/bomberman/image/[theme]/");
         themeAlert.showAndWait();
     }
 
-    /**
-     * Modification des noms des joueurs
-     */
-    @FXML
-    private void onPlayerNames(ActionEvent event) {
-        try {
-            // Joueur 1
-            TextInputDialog dialog1 = new TextInputDialog(player1Name);
-            dialog1.setTitle("Nom du Joueur 1");
-            dialog1.setHeaderText("🔵 Joueur 1 (ZQSD + ESPACE)");
-            dialog1.setContentText("Nom:");
-
-            Optional<String> result1 = dialog1.showAndWait();
-            if (result1.isPresent() && !result1.get().trim().isEmpty()) {
-                String newName1 = result1.get().trim();
-
-                if (newName1.length() > 15) {
-                    showError("Nom trop long", "Maximum 15 caractères");
-                    return;
-                }
-
-                // Joueur 2
-                TextInputDialog dialog2 = new TextInputDialog(player2Name);
-                dialog2.setTitle("Nom du Joueur 2");
-                dialog2.setHeaderText("🟢 Joueur 2 (↑↓←→ + ENTRÉE)");
-                dialog2.setContentText("Nom:");
-
-                Optional<String> result2 = dialog2.showAndWait();
-                if (result2.isPresent() && !result2.get().trim().isEmpty()) {
-                    String newName2 = result2.get().trim();
-
-                    if (newName2.length() > 15) {
-                        showError("Nom trop long", "Maximum 15 caractères");
-                        return;
-                    }
-
-                    if (newName1.equals(newName2)) {
-                        showError("Noms identiques", "Les joueurs doivent avoir des noms différents");
-                        return;
-                    }
-
-                    // Sauvegarder
-                    player1Name = newName1;
-                    player2Name = newName2;
-
-                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                    successAlert.setTitle("✅ Noms mis à jour");
-                    successAlert.setContentText("🔵 " + player1Name + " vs 🟢 " + player2Name + "\n\nPrêts pour le combat !");
-                    successAlert.showAndWait();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur", "Problème lors de la modification des noms");
-        }
-    }
 
     /**
      * Retour au menu principal
@@ -270,8 +213,8 @@ public class GameModeController {
     private void onQuit(ActionEvent event) {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Quitter");
-        confirmAlert.setHeaderText("🚪 Partir déjà ?");
-        confirmAlert.setContentText("Êtes-vous sûr de vouloir quitter Super Bomberman ?");
+        confirmAlert.setHeaderText("Quitter");
+        confirmAlert.setContentText("Tu vas où comme ça ? " + "\n" + "reste ici");
 
         Optional<ButtonType> result = confirmAlert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -498,11 +441,6 @@ public class GameModeController {
     // Ajout de la méthode pour le mode CTF dans GameModeController.java
 
     /**
-     * Lance le mode Capture The Flag
-     */
-
-
-    /**
      * Demande les noms des joueurs pour le mode CTF
      */
     private String[] getCTFPlayerNames(int playerCount) {
@@ -649,7 +587,7 @@ public class GameModeController {
             StringBuilder confirmContent = new StringBuilder();
             confirmContent.append("⚔️ Participants CTF :\n");
             String[] colors = {"🔴", "🔵", "🟡", "🟢"};
-            String[] controls = {"ZQSD + A", "↑↓←→ + ENTRÉE", "IJKL + U", "8456 + 7"};
+            String[] controls = {" ZQSD + A", "↑↓←→ + ENTRÉE", "IJKL + U", "8456 + 7"};
 
             for (int i = 0; i < playerCount; i++) {
                 confirmContent.append(colors[i]).append(" ").append(playerNames[i]);
@@ -731,14 +669,6 @@ public class GameModeController {
     public static PlayerProfile getCurrentGameProfile() {
         return currentGameProfile;
     }
-
-    /**
-     * Vérifie si un profil est sélectionné
-     */
-    public static boolean hasProfileSelected() {
-        return currentGameProfile != null;
-    }
-
 
 
     // Modifiez la méthode onSelectProfile existante pour définir le profil courant

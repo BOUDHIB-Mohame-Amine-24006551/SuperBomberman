@@ -1,17 +1,11 @@
-// FILE: src/main/java/fr/univ/bomberman/controller/GameController.java
 package fr.univ.bomberman.controller;
 
-import fr.univ.bomberman.exceptions.BombermanException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
-/**
- * Contrôleur pour la vue de jeu.
- */
 public class GameController {
 
     @FXML
@@ -30,8 +24,6 @@ public class GameController {
     @FXML
     public void initialize() {
         System.out.println("GameController initialisé");
-
-        // Créer une grille temporaire pour tester (15x13 est une taille classique pour Bomberman)
         int cols = 15;
         int rows = 13;
 
@@ -68,14 +60,9 @@ public class GameController {
         updateHUD();
     }
 
-    /**
-     * Gère les saisies clavier pour déplacer le joueur ou poser une bombe.
-     *
-     * @param event l'événement KeyEvent
-     * @throws BombermanException si une erreur survient dans la logique de jeu
-     */
+
     @FXML
-    private void onKeyPressed(KeyEvent event) throws BombermanException {
+    private void onKeyPressed(KeyEvent event) {
         System.out.println("Touche pressée: " + event.getCode());
 
         switch (event.getCode()) {
@@ -127,13 +114,6 @@ public class GameController {
         updateHUD();
     }
 
-    /**
-     * Met à jour la représentation visuelle du plateau.
-     */
-    private void updateBoardView() {
-        // TODO: récuperer l'état du plateau depuis game.getBoard() et mettre à jour boardGrid
-        System.out.println("Mise à jour du plateau");
-    }
 
     /**
      * Met à jour les informations du HUD (joueur courant, bombes restantes, etc.).
