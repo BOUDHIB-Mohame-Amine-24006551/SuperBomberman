@@ -61,14 +61,7 @@ public class Player {
         return remainingBombs;
     }
 
-    /**
-     * Décrémente le nombre de bombes disponibles.
-     */
-    public void decrementBombCount() {
-        if (remainingBombs > 0) {
-            remainingBombs--;
-        }
-    }
+
 
     /**
      * @return true si le joueur est éliminé
@@ -86,21 +79,9 @@ public class Player {
         this.eliminated = eliminated;
     }
 
-    /**
-     * @return true si le joueur a un drapeau (mode capture the flag)
-     */
-    public boolean hasFlag() {
-        return hasFlag;
-    }
 
-    /**
-     * Définit l'état de possession du drapeau.
-     *
-     * @param hasFlag true si le joueur porte le drapeau
-     */
-    public void setHasFlag(boolean hasFlag) {
-        this.hasFlag = hasFlag;
-    }
+
+
 
     /**
      * Définit le nom du joueur
@@ -169,12 +150,7 @@ public class Player {
 
     // === NOUVELLES MÉTHODES POUR LE MODE CTF ===
 
-    /**
-     * @return la liste des drapeaux capturés par ce joueur
-     */
-    public List<String> getCapturedFlags() {
-        return capturedFlags;
-    }
+
 
     /**
      * Ajoute un drapeau capturé à la liste
@@ -220,30 +196,9 @@ public class Player {
         this.canPlaceBombWhenEliminated = canPlaceBombWhenEliminated;
     }
 
-    /**
-     * Vérifie si le joueur peut effectuer des actions (mouvement, bombes)
-     * En mode CTF, les joueurs éliminés peuvent encore poser des bombes
-     */
-    public boolean canPerformActions() {
-        return !eliminated || canPlaceBombWhenEliminated;
-    }
 
-    /**
-     * Vérifie si le joueur peut se déplacer
-     */
-    public boolean canMove() {
-        return !eliminated;
-    }
 
-    /**
-     * Remet le joueur dans son état initial pour un nouveau jeu CTF
-     */
-    public void resetForCTF() {
-        eliminated = false;
-        hasFlag = false;
-        capturedFlags.clear();
-        remainingBombs = 1;
-        resetBombCooldown();
-        canPlaceBombWhenEliminated = true; // Activé par défaut en mode CTF
-    }
+
+
+
 }
