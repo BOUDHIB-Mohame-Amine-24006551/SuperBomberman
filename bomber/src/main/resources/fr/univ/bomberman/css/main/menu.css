@@ -1,0 +1,128 @@
+/* Container principal */
+.main-menu-container {
+    -fx-background-color: linear-gradient(to bottom, #0F2027, #203A43, #2C5364);
+    -fx-min-width: 500;
+    -fx-min-height: 600;
+}
+
+/* Titre du jeu */
+.game-title {
+    -fx-text-fill: linear-gradient(to right, #FFD700, #FFA500);
+    -fx-effect: dropshadow(gaussian, rgba(255,215,0,0.8), 10, 0.7, 0, 0);
+}
+
+.game-subtitle {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0.5, 2, 2);
+}
+
+/* Container des boutons */
+.menu-buttons-container {
+    -fx-padding: 20;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 15;
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+}
+
+/* Bouton principal JOUER */
+.main-button {
+    -fx-background-color: linear-gradient(to bottom, #FF6B6B, #EE5A52);
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 20 40 20 40;
+    -fx-effect: dropshadow(gaussian, rgba(238,90,82,0.6), 15, 0.7, 0, 5);
+    -fx-cursor: hand;
+    -fx-min-width: 200;
+}
+
+.main-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #FF8E8E, #FF6B6B);
+    -fx-effect: dropshadow(gaussian, rgba(255,107,107,0.8), 20, 0.8, 0, 7);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.main-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #EE5A52, #D63031);
+    -fx-translate-y: 2;
+    -fx-effect: dropshadow(gaussian, rgba(238,90,82,0.4), 8, 0.5, 0, 3);
+}
+
+/* Boutons secondaires */
+.secondary-button {
+    -fx-background-color: linear-gradient(to bottom, #4ECDC4, #44A08D);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 12 30 12 30;
+    -fx-effect: dropshadow(gaussian, rgba(68,160,141,0.4), 8, 0.5, 0, 3);
+    -fx-cursor: hand;
+    -fx-min-width: 180;
+}
+
+.secondary-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #6DD5D0, #4ECDC4);
+    -fx-effect: dropshadow(gaussian, rgba(78,205,196,0.6), 12, 0.6, 0, 4);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.secondary-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #44A08D, #093637);
+    -fx-translate-y: 1;
+}
+
+/* Bouton quitter */
+.quit-button {
+    -fx-background-color: linear-gradient(to bottom, #95A5A6, #7F8C8D);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10 25 10 25;
+    -fx-effect: dropshadow(gaussian, rgba(127,140,141,0.4), 6, 0.4, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 140;
+}
+
+.quit-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #BDC3C7, #95A5A6);
+    -fx-effect: dropshadow(gaussian, rgba(149,165,166,0.5), 8, 0.5, 0, 3);
+}
+
+.quit-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #7F8C8D, #5D6D7E);
+    -fx-translate-y: 1;
+}
+
+/* Séparateurs */
+.menu-separator {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-pref-width: 250;
+    -fx-pref-height: 1;
+}
+
+/* Informations du jeu */
+.game-info {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.version-info {
+    -fx-text-fill: #BDC3C7;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0.3, 1, 1);
+}
+
+.controls-hint {
+    -fx-text-fill: #95A5A6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0.2, 1, 1);
+}
+
+/* Animations par défaut */
+Button {
+    -fx-transition: all 0.2s ease;
+}
+
+Button:hover {
+    -fx-transition: all 0.2s ease;
+}

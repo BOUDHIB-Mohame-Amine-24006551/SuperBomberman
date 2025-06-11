@@ -1,0 +1,202 @@
+/* Container principal */
+.main-container {
+    -fx-background-color: linear-gradient(to bottom, #1e3c72, #2a5298);
+    -fx-padding: 20;
+}
+
+/* Titre principal */
+.title {
+    -fx-text-fill: #FFD700;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 5, 0.5, 2, 2);
+}
+
+.subtitle {
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 3, 0.3, 1, 1);
+}
+
+/* Cartes des modes de jeu - Ajustées pour 3 cartes */
+.game-mode-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.5, 0, 5);
+    -fx-border-color: #4A90E2;
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-min-width: 240;
+    -fx-max-width: 240;
+    -fx-min-height: 320;
+}
+
+.game-mode-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(74,144,226,0.6), 15, 0.7, 0, 5);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Titres des modes */
+.mode-title {
+    -fx-text-fill: #2C3E50;
+}
+
+/* Titre des contrôles */
+.controls-title {
+    -fx-text-fill: #34495E;
+}
+
+/* Boutons principaux */
+.mode-button-2p {
+    -fx-background-color: linear-gradient(to bottom, #3498DB, #2980B9);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 180;
+}
+
+.mode-button-2p:hover {
+    -fx-background-color: linear-gradient(to bottom, #5DADE2, #3498DB);
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.6), 8, 0.5, 0, 3);
+}
+
+.mode-button-2p:pressed {
+    -fx-background-color: linear-gradient(to bottom, #2980B9, #21618C);
+    -fx-translate-y: 1;
+}
+
+/* NOUVEAU: Bouton mode Bot */
+.mode-button-bot {
+    -fx-background-color: linear-gradient(to bottom, #9B59B6, #8E44AD);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 180;
+}
+
+.mode-button-bot:hover {
+    -fx-background-color: linear-gradient(to bottom, #BB8FCE, #9B59B6);
+    -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.6), 8, 0.5, 0, 3);
+}
+
+.mode-button-bot:pressed {
+    -fx-background-color: linear-gradient(to bottom, #8E44AD, #7D3C98);
+    -fx-translate-y: 1;
+}
+
+/* NOUVEAU: Bouton tutoriel Bot */
+.tutorial-button {
+    -fx-background-color: rgba(155, 89, 182, 0.2);
+    -fx-text-fill: #8E44AD;
+    -fx-background-radius: 5;
+    -fx-border-color: #9B59B6;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-padding: 4 12 4 12;
+    -fx-cursor: hand;
+    -fx-min-width: 120;
+}
+
+.tutorial-button:hover {
+    -fx-background-color: rgba(155, 89, 182, 0.3);
+    -fx-text-fill: #7D3C98;
+}
+
+.tutorial-button:pressed {
+    -fx-background-color: rgba(155, 89, 182, 0.4);
+    -fx-translate-y: 1;
+}
+
+.mode-button-4p {
+    -fx-background-color: linear-gradient(to bottom, #E74C3C, #C0392B);
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 2);
+    -fx-cursor: hand;
+    -fx-min-width: 180;
+}
+
+.mode-button-4p:hover {
+    -fx-background-color: linear-gradient(to bottom, #EC7063, #E74C3C);
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.6), 8, 0.5, 0, 3);
+}
+
+.mode-button-4p:pressed {
+    -fx-background-color: linear-gradient(to bottom, #C0392B, #A93226);
+    -fx-translate-y: 1;
+}
+
+/* Boutons secondaires */
+.secondary-button {
+    -fx-background-color: linear-gradient(to bottom, #95A5A6, #7F8C8D);
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16 8 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0.3, 0, 1);
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #BDC3C7, #95A5A6);
+    -fx-effect: dropshadow(gaussian, rgba(149,165,166,0.5), 5, 0.4, 0, 2);
+}
+
+.secondary-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #7F8C8D, #6C7B7F);
+    -fx-translate-y: 1;
+}
+
+/* Boutons de navigation */
+.nav-button {
+    -fx-background-color: linear-gradient(to bottom, #34495E, #2C3E50);
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0.3, 0, 2);
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5D6D7E, #34495E);
+}
+
+.nav-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #2C3E50, #1B2631);
+    -fx-translate-y: 1;
+}
+
+.nav-button-quit {
+    -fx-background-color: linear-gradient(to bottom, #E67E22, #D35400);
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0.3, 0, 2);
+    -fx-cursor: hand;
+}
+
+.nav-button-quit:hover {
+    -fx-background-color: linear-gradient(to bottom, #F39C12, #E67E22);
+}
+
+.nav-button-quit:pressed {
+    -fx-background-color: linear-gradient(to bottom, #D35400, #BA4A00);
+    -fx-translate-y: 1;
+}
+
+/* Labels généraux */
+Label {
+    -fx-text-fill: #2C3E50;
+}
+
+/* Effets spéciaux pour le mode Bot */
+.mode-button-bot:focused {
+    -fx-effect: dropshadow(gaussian, #9B59B6, 12, 0.7, 0, 0);
+}
+
+/* Animation pour les cartes */
+.game-mode-card {
+    -fx-transition: all 0.2s ease-in-out;
+}

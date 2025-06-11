@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fr.univ.bomberman.controller.PlayerProfileSelectionController"
+      alignment="CENTER"
+      spacing="15"
+      prefWidth="600"
+      prefHeight="400">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <Label fx:id="titleLabel" 
+           text="Sélection des profils joueurs" 
+           style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+    
+    <Text text="Veuillez sélectionner un profil pour chaque joueur ou en créer un nouveau."
+          textAlignment="CENTER" 
+          wrappingWidth="500"/>
+    
+    <Separator/>
+    
+    <GridPane alignment="CENTER" hgap="20" vgap="15">
+        <!-- Joueur 1 -->
+        <Label fx:id="player1Label" 
+               text="Joueur 1:" 
+               style="-fx-font-weight: bold;"
+               GridPane.rowIndex="0" 
+               GridPane.columnIndex="0"/>
+        <ComboBox fx:id="player1ComboBox" 
+                  prefWidth="350" 
+                  GridPane.rowIndex="0" 
+                  GridPane.columnIndex="1"/>
+        
+        <!-- Joueur 2 -->
+        <Label fx:id="player2Label" 
+               text="Joueur 2:" 
+               style="-fx-font-weight: bold;"
+               GridPane.rowIndex="1" 
+               GridPane.columnIndex="0"/>
+        <ComboBox fx:id="player2ComboBox" 
+                  prefWidth="350" 
+                  GridPane.rowIndex="1" 
+                  GridPane.columnIndex="1"/>
+        
+        <!-- Joueur 3 -->
+        <Label fx:id="player3Label" 
+               text="Joueur 3:" 
+               style="-fx-font-weight: bold;"
+               GridPane.rowIndex="2" 
+               GridPane.columnIndex="0"
+               visible="false"/>
+        <ComboBox fx:id="player3ComboBox" 
+                  prefWidth="350" 
+                  GridPane.rowIndex="2" 
+                  GridPane.columnIndex="1"
+                  visible="false"/>
+        
+        <!-- Joueur 4 -->
+        <Label fx:id="player4Label" 
+               text="Joueur 4:" 
+               style="-fx-font-weight: bold;"
+               GridPane.rowIndex="3" 
+               GridPane.columnIndex="0"
+               visible="false"/>
+        <ComboBox fx:id="player4ComboBox" 
+                  prefWidth="350" 
+                  GridPane.rowIndex="3" 
+                  GridPane.columnIndex="1"
+                  visible="false"/>
+    </GridPane>
+    
+    <Separator/>
+    
+    <Text text="Vous pouvez créer un nouveau profil ou utiliser un profil existant."
+          textAlignment="CENTER"/>
+    
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="createProfileButton" 
+                text="Créer un profil" 
+                onAction="#onCreateProfile"
+                prefWidth="150"/>
+        <Button fx:id="continueButton" 
+                text="Continuer" 
+                onAction="#onContinue"
+                prefWidth="150"
+                style="-fx-font-weight: bold;"/>
+        <Button fx:id="cancelButton" 
+                text="Annuler" 
+                onAction="#onCancel"
+                prefWidth="100"/>
+    </HBox>
+</VBox> 

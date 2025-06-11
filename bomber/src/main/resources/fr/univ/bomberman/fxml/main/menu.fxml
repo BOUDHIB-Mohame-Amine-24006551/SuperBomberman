@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="25.0" styleClass="main-menu-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.MenuController">
+    <children>
+        <!-- Logo et titre -->
+        <VBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Label styleClass="game-title" text="💣 SUPER BOMBERMAN 💣">
+                    <font>
+                        <Font name="System Bold" size="42.0" />
+                    </font>
+                </Label>
+                <Label styleClass="game-subtitle" text="Préparez-vous au combat !">
+                    <font>
+                        <Font name="System Italic" size="16.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+
+        <!-- Menu principal -->
+        <VBox alignment="CENTER" spacing="15.0" styleClass="menu-buttons-container">
+            <children>
+                <!-- Bouton principal - Jouer -->
+                <Button fx:id="playButton" onAction="#onStartGame" styleClass="main-button" text="🎮 JOUER" textAlignment="CENTER">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Button>
+
+                <!-- Séparateur visuel -->
+                <Separator styleClass="menu-separator" />
+
+                <!-- Boutons secondaires -->
+                <Button fx:id="playerNamesButton" onAction="#onPlayerNames" styleClass="secondary-button" text="👥 Noms des Joueurs">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+
+                <Button fx:id="profileButton" onAction="#onProfile" styleClass="secondary-button" text="👤 Profil">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+                <!-- Séparateur -->
+                <Separator styleClass="menu-separator" />
+
+                <!-- Bouton quitter -->
+                <Button fx:id="quitButton" onAction="#onQuit" styleClass="quit-button" text="❌ Quitter">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </VBox>
+
+        <!-- Informations du jeu -->
+        <VBox alignment="CENTER" spacing="5.0" styleClass="game-info">
+            <children>
+                <Label styleClass="controls-hint" text="💡 Astuce: Appuyez sur T en jeu pour changer de thème">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </children>
+    <padding>
+        <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+    </padding>
+</VBox>

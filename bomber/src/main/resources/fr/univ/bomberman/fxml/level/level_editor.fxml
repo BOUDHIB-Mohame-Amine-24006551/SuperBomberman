@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.univ.bomberman.controller.LevelEditorController"
+      spacing="10"
+      stylesheets="@../../css/level/level_editor.css">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="saveButton" text="Sauvegarder" onAction="#onSave"/>
+        <Button fx:id="loadButton" text="Charger" onAction="#onLoad"/>
+        <Button fx:id="clearButton" text="Effacer" onAction="#onClear"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <CheckBox fx:id="autoFillCheckBox" text="Auto-remplissage aléatoire"/>
+    </HBox>
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Type de tuile:"/>
+        <fx:define>
+            <ToggleGroup fx:id="tileTypeGroup"/>
+        </fx:define>
+        <RadioButton fx:id="emptyRadio" toggleGroup="$tileTypeGroup" selected="true" styleClass="tile-radio">
+            <graphic>
+                <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                    <Image url="@/fr/univ/bomberman/image/default/ground.png"/>
+                </ImageView>
+            </graphic>
+        </RadioButton>
+        <RadioButton fx:id="wallRadio" toggleGroup="$tileTypeGroup" styleClass="tile-radio">
+            <graphic>
+                <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                    <Image url="@/fr/univ/bomberman/image/default/wall.png"/>
+                </ImageView>
+            </graphic>
+        </RadioButton>
+        <RadioButton fx:id="destructibleRadio" toggleGroup="$tileTypeGroup" styleClass="tile-radio">
+            <graphic>
+                <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                    <Image url="@/fr/univ/bomberman/image/default/brick.png"/>
+                </ImageView>
+            </graphic>
+        </RadioButton>
+        <RadioButton fx:id="voidRadio" toggleGroup="$tileTypeGroup" styleClass="tile-radio">
+            <graphic>
+                <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
+                    <Image url="@/fr/univ/bomberman/image/default/void.png"/>
+                </ImageView>
+            </graphic>
+        </RadioButton>
+    </HBox>
+    
+    <GridPane fx:id="gridPane" alignment="CENTER">
+        <!-- La grille sera remplie dynamiquement -->
+    </GridPane>
+    
+</VBox>

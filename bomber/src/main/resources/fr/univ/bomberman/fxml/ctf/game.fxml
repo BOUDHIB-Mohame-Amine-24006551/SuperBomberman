@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.CTFController">
+    <top>
+        <!-- En-tête avec titre et statut -->
+        <VBox spacing="10.0" styleClass="header-container">
+            <children>
+                <Label fx:id="gameStatusLabel" styleClass="game-status-title" text="🏁 CAPTURE THE FLAG">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="instructionsLabel" styleClass="instructions-label" text="Préparez-vous pour la bataille des drapeaux !" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+
+                <!-- Boutons de contrôle -->
+                <HBox alignment="CENTER" spacing="15.0">
+                    <children>
+                        <Button fx:id="startGameButton" onAction="#onStartGame" styleClass="primary-button" text="🚀 Commencer">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+
+                        <Button onAction="#onShowRules" styleClass="secondary-button" text="📋 Règles">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+
+                        <Button onAction="#onShowStats" styleClass="secondary-button" text="📊 Stats">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+
+                        <Button fx:id="backToMenuButton" onAction="#onBackToMenu" styleClass="back-button" text="← Menu">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+        </VBox>
+    </top>
+
+    <center>
+        <!-- Plateau de jeu -->
+        <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="game-area">
+            <content>
+                <VBox alignment="CENTER">
+                    <children>
+                        <GridPane fx:id="boardGrid" alignment="CENTER" gridLinesVisible="false" hgap="0.0" vgap="0.0" styleClass="game-board">
+                            <!-- Les cellules seront ajoutées dynamiquement -->
+                        </GridPane>
+                    </children>
+                    <padding>
+                        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <!-- Panneau d'informations en bas -->
+        <VBox spacing="8.0" styleClass="info-panel">
+            <children>
+                <Label styleClass="controls-title" text="🎮 CONTRÔLES:" textAlignment="CENTER">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <VBox alignment="CENTER" spacing="3.0">
+                            <children>
+                                <Label styleClass="player-label" text="🔵 JOUEUR 1" textFill="#2196F3">
+                                    <font>
+                                        <Font name="System Bold" size="10.0" />
+                                    </font>
+                                </Label>
+                                <Label styleClass="controls-text" text="ZQSD + ESPACE">
+                                    <font>
+                                        <Font size="9.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="3.0">
+                            <children>
+                                <Label styleClass="player-label" text="🟢 JOUEUR 2" textFill="#4CAF50">
+                                    <font>
+                                        <Font name="System Bold" size="10.0" />
+                                    </font>
+                                </Label>
+                                <Label styleClass="controls-text" text="↑↓←→ + ENTRÉE">
+                                    <font>
+                                        <Font size="9.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="3.0">
+                            <children>
+                                <Label styleClass="player-label" text="🟡 JOUEUR 3" textFill="#FF9800">
+                                    <font>
+                                        <Font name="System Bold" size="10.0" />
+                                    </font>
+                                </Label>
+                                <Label styleClass="controls-text" text="IJKL + U">
+                                    <font>
+                                        <Font size="9.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="3.0">
+                            <children>
+                                <Label styleClass="player-label" text="🟠 JOUEUR 4" textFill="#E91E63">
+                                    <font>
+                                        <Font name="System Bold" size="10.0" />
+                                    </font>
+                                </Label>
+                                <Label styleClass="controls-text" text="8456 + 7">
+                                    <font>
+                                        <Font size="9.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <Separator />
+
+                <Label styleClass="game-tips" text="💡 Astuce: Touchez un drapeau ennemi pour le capturer ! Les joueurs éliminés peuvent encore poser des bombes." textAlignment="CENTER" wrapText="true">
+                    <font>
+                        <Font size="11.0" />
+                    </font>
+                </Label>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+            </padding>
+        </VBox>
+    </bottom>
+</BorderPane>
