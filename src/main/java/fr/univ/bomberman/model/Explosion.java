@@ -54,17 +54,7 @@ public class Explosion {
         long elapsed = System.currentTimeMillis() - creationTime;
         return elapsed <= EXPLOSION_DURATION_MS;
     }
-    /**
-     * ✅ NOUVELLE MÉTHODE: Retourne le temps restant où l'explosion est mortelle (en ms)
-     */
 
-
-
-    public long getRemainingTime() {
-        long elapsed = System.currentTimeMillis() - creationTime;
-        long remaining = EXPLOSION_DURATION_MS - elapsed;
-        return Math.max(0, remaining);
-    }
 
     /**
      * NOUVELLE MÉTHODE: Étend l'explosion dans une direction donnée
@@ -132,9 +122,7 @@ public class Explosion {
         return bombOwner;
     }
 
-    /**
-     * Décrémente la durée de l'explosion.
-     */
+
 
     /**
      * MÉTHODE MODIFIÉE: L'explosion reste visible plus longtemps mais n'est mortelle que 2.5s
@@ -154,27 +142,7 @@ public class Explosion {
         return affectedPositions.contains(pos);
     }
 
-    /**
-     * MÉTHODE MODIFIÉE: Vérifie si cette explosion devrait affecter un joueur
-     * Maintenant basé sur le temps mortel de 2.5s
-     *
-     * @param player joueur à tester
-     * @return true si le joueur devrait être affecté
-     */
-    public boolean shouldAffectPlayer(Player player) {
-        if (!affectsPosition(player.getPosition())) {
-            return false;
-        }
 
-        // L'explosion est mortelle pendant toute sa durée de vie
-        return !isFinished();
-    }
 
-    /**
-     * NOUVELLE MÉTHODE: Vérifie si le joueur est le propriétaire de la bombe
-     * (utile pour les messages informatifs)
-     */
-    public boolean isOwner(Player player) {
-        return bombOwner != null && bombOwner.equals(player);
-    }
+
 }
