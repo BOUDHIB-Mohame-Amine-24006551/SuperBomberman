@@ -1,146 +1,67 @@
-// FILE: src/main/java/fr/univ/bomberman/model/GameModeStats.java
 package fr.univ.bomberman.model;
 
 /**
  * Statistiques pour un mode de jeu spécifique
  */
 public class GameModeStats {
-
     private int gamesPlayed;
     private int wins;
     private int losses;
-    private int totalBombs;
-    private int totalEliminations;
-    private int totalDeaths;
+    private int bombsPlaced;
+    private int eliminationsDealt;
+    private int deaths;
     private long totalPlayTimeSeconds;
-    private int bestPerformanceScore;
-    private String fastestWinTime; // Format: "2m 15s"
+    private int bestStreak;           // Meilleure série de victoires
+    private int currentStreak;        // Série actuelle
 
-    /**
-     * Constructeur par défaut
-     */
+    // Statistiques spéciales pour certains modes
+    private int flagsCaptured;        // Pour CTF
+    private int botWins;              // Victoires contre IA
+    private int[] botWinsByDifficulty; // [facile, moyen, difficile]
+
     public GameModeStats() {
-        this.gamesPlayed = 0;
-        this.wins = 0;
-        this.losses = 0;
-        this.totalBombs = 0;
-        this.totalEliminations = 0;
-        this.totalDeaths = 0;
-        this.totalPlayTimeSeconds = 0;
-        this.bestPerformanceScore = 0;
-        this.fastestWinTime = "N/A";
+        this.botWinsByDifficulty = new int[3];
     }
 
-    /**
-     * Enregistre une nouvelle partie dans ces statistiques
-     */
     public void recordGame(GameSession session) {
         gamesPlayed++;
+        bombsPlaced += session.getBombsPlaced();
+        eliminationsDealt += session.getEliminationsDealt();
+        deaths += session.getDeaths();
+        totalPlayTimeSeconds += session.getDurationSeconds();
 
         if (session.isWon()) {
             wins++;
+            currentStreak++;
+            if (currentStreak > bestStreak) {
+                bestStreak = currentStreak;
+            }
 
-            // Mettre à jour le temps de victoire le plus rapide
-            updateFastestWin(session.getDurationSeconds());
+            // Statistiques spéciales
+            if (session.isBotGame()) {
+                botWins++;
+                int difficulty = session.getBotDifficulty() - 1; // 0, 1, 2
+                if (difficulty >= 0 && difficulty < 3) {
+                    botWinsByDifficulty[difficulty]++;
+                }
+            }
         } else {
             losses++;
+            currentStreak = 0;
         }
 
-        totalBombs += session.getBombsPlaced();
-        totalEliminations += session.getEliminationsDealt();
-        totalDeaths += session.getDeaths();
-        totalPlayTimeSeconds += session.getDurationSeconds();
-
-        // Mettre à jour le meilleur score de performance
-        int sessionScore = session.getPerformanceScore();
-        if (sessionScore > bestPerformanceScore) {
-            bestPerformanceScore = sessionScore;
+        // CTF spécifique
+        if (session.getGameMode() == GameMode.CAPTURE_THE_FLAG) {
+            flagsCaptured += session.getFlagsCaptured();
         }
     }
 
-    /**
-     * Met à jour le temps de victoire le plus rapide
-     */
-    private void updateFastestWin(long durationSeconds) {
-        if ("N/A".equals(fastestWinTime)) {
-            fastestWinTime = formatDuration(durationSeconds);
-        } else {
-            // Convertir le temps actuel en secondes pour comparer
-            long currentFastestSeconds = parseDuration(fastestWinTime);
-            if (durationSeconds < currentFastestSeconds) {
-                fastestWinTime = formatDuration(durationSeconds);
-            }
-        }
-    }
-
-    /**
-     * Formate une durée en secondes vers le format "Xm Ys"
-     */
-    private String formatDuration(long seconds) {
-        long minutes = seconds / 60;
-        long remainingSeconds = seconds % 60;
-        return String.format("%dm %02ds", minutes, remainingSeconds);
-    }
-
-    /**
-     * Parse une durée du format "Xm Ys" vers des secondes
-     */
-    private long parseDuration(String duration) {
-        try {
-            String[] parts = duration.replace("m", "").replace("s", "").split(" ");
-            long minutes = Long.parseLong(parts[0]);
-            long seconds = Long.parseLong(parts[1]);
-            return minutes * 60 + seconds;
-        } catch (Exception e) {
-            return 300; // 5 minutes par défaut
-        }
-    }
-
-    /**
-     * Calcule le ratio victoires/défaites
-     */
     public double getWinRatio() {
         if (gamesPlayed == 0) return 0.0;
         return (double) wins / gamesPlayed * 100.0;
     }
 
-    /**
-     * Calcule le ratio kills/deaths
-     */
-    public double getKillDeathRatio() {
-        if (totalDeaths == 0) return totalEliminations;
-        return (double) totalEliminations / totalDeaths;
-    }
-
-    /**
-     * Calcule la moyenne de bombes par partie
-     */
-    public double getAverageBombsPerGame() {
-        if (gamesPlayed == 0) return 0.0;
-        return (double) totalBombs / gamesPlayed;
-    }
-
-    /**
-     * Calcule le temps de jeu moyen par partie (en minutes)
-     */
-    public double getAverageGameDuration() {
-        if (gamesPlayed == 0) return 0.0;
-        return (double) totalPlayTimeSeconds / gamesPlayed / 60.0;
-    }
-
-    /**
-     * Obtient le temps de jeu total formaté
-     */
-    public String getFormattedTotalPlayTime() {
-        long hours = totalPlayTimeSeconds / 3600;
-        long minutes = (totalPlayTimeSeconds % 3600) / 60;
-        return String.format("%dh %dm", hours, minutes);
-    }
-
-    // ============================================================================
-    // GETTERS ET SETTERS
-    // ============================================================================
-
+    // Getters et setters
     public int getGamesPlayed() {
         return gamesPlayed;
     }
@@ -165,28 +86,28 @@ public class GameModeStats {
         this.losses = losses;
     }
 
-    public int getTotalBombs() {
-        return totalBombs;
+    public int getBombsPlaced() {
+        return bombsPlaced;
     }
 
-    public void setTotalBombs(int totalBombs) {
-        this.totalBombs = totalBombs;
+    public void setBombsPlaced(int bombsPlaced) {
+        this.bombsPlaced = bombsPlaced;
     }
 
-    public int getTotalEliminations() {
-        return totalEliminations;
+    public int getEliminationsDealt() {
+        return eliminationsDealt;
     }
 
-    public void setTotalEliminations(int totalEliminations) {
-        this.totalEliminations = totalEliminations;
+    public void setEliminationsDealt(int eliminationsDealt) {
+        this.eliminationsDealt = eliminationsDealt;
     }
 
-    public int getTotalDeaths() {
-        return totalDeaths;
+    public int getDeaths() {
+        return deaths;
     }
 
-    public void setTotalDeaths(int totalDeaths) {
-        this.totalDeaths = totalDeaths;
+    public void setDeaths(int deaths) {
+        this.deaths = deaths;
     }
 
     public long getTotalPlayTimeSeconds() {
@@ -197,19 +118,52 @@ public class GameModeStats {
         this.totalPlayTimeSeconds = totalPlayTimeSeconds;
     }
 
-    public int getBestPerformanceScore() {
-        return bestPerformanceScore;
+    public int getBestStreak() {
+        return bestStreak;
     }
 
-    public void setBestPerformanceScore(int bestPerformanceScore) {
-        this.bestPerformanceScore = bestPerformanceScore;
+    public void setBestStreak(int bestStreak) {
+        this.bestStreak = bestStreak;
     }
 
-    public String getFastestWinTime() {
-        return fastestWinTime;
+    public int getCurrentStreak() {
+        return currentStreak;
     }
 
-    public void setFastestWinTime(String fastestWinTime) {
-        this.fastestWinTime = fastestWinTime;
+    public void setCurrentStreak(int currentStreak) {
+        this.currentStreak = currentStreak;
+    }
+
+    public int getFlagsCaptured() {
+        return flagsCaptured;
+    }
+
+    public void setFlagsCaptured(int flagsCaptured) {
+        this.flagsCaptured = flagsCaptured;
+    }
+
+    public int getBotWins() {
+        return botWins;
+    }
+
+    public void setBotWins(int botWins) {
+        this.botWins = botWins;
+    }
+
+    public int[] getBotWinsByDifficulty() {
+        return botWinsByDifficulty;
+    }
+
+    public void setBotWinsByDifficulty(int[] botWinsByDifficulty) {
+        this.botWinsByDifficulty = botWinsByDifficulty;
+    }
+
+    public void addGame(boolean won) {
+        gamesPlayed++;
+        if (won) {
+            wins++;
+        } else {
+            losses++;
+        }
     }
 }
