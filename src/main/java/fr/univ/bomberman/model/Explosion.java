@@ -19,17 +19,6 @@ public class Explosion {
     private long creationTime;
     private static final long EXPLOSION_DURATION_MS = 1500;
 
-    /**
-     * Crée une explosion centrée sur une position et détruit les briques directement adjacentes.
-     * MODIFIÉ: Les explosions s'arrêtent aux murs indestructibles
-     *
-     * @param center position de la bombe
-     * @param board  plateau de jeu
-     * @throws BombermanException si modification du plateau échoue
-     */
-    public Explosion(Position center, Board board) throws BombermanException {
-        this(center, board, null);
-    }
 
     /**
      * CONSTRUCTEUR MODIFIÉ: Crée une explosion avec référence au propriétaire
@@ -123,7 +112,7 @@ public class Explosion {
      * @param pos position à ajouter
      * @param board plateau de jeu
      */
-    private void addExplosionPosition(Position pos, Board board) throws BombermanException {
+    private void addExplosionPosition(Position pos, Board board) {
         if (board.isWithinBounds(pos)) {
             affectedPositions.add(pos);
         }
