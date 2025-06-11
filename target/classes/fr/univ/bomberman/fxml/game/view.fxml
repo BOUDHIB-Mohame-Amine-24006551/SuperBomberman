@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+        <?import javafx.geometry.Insets?>
+        <?import javafx.scene.control.Label?>
+        <?import javafx.scene.input.KeyEvent?>
+        <?import javafx.scene.layout.BorderPane?>
+        <?import javafx.scene.layout.GridPane?>
+        <?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:controller="fr.univ.bomberman.controller.GameController"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            focusTraversable="true"
+            onKeyPressed="#onKeyPressed"
+            prefWidth="1280"
+            prefHeight="720">
+    <center>
+        <GridPane fx:id="boardGrid"
+                  hgap="0"
+                  vgap="0">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+        </GridPane>
+    </center>
+    <right>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="currentPlayerLabel"
+                   text="Joueur actuel :"
+                   styleClass="hud-label"/>
+            <Label fx:id="bombsRemainingLabel"
+                   text="Bombes restantes :"
+                   styleClass="hud-label"/>
+        </VBox>
+    </right>
+</BorderPane>
