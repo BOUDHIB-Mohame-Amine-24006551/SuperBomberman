@@ -35,10 +35,5 @@ public enum GameResult {
         return this == LOSE || this == DISCONNECT || this == FORFEIT;
     }
 
-    /**
-     * Vérifie si le résultat est une égalité
-     */
-    public boolean isTie() {
-        return this == TIE;
-    }
+
 }
