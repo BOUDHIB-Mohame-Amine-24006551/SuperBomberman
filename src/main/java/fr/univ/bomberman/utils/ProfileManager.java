@@ -328,25 +328,6 @@ public class ProfileManager {
     }
 
     /**
-     * Met à jour les préférences d'un profil
-     */
-    public void updatePreferences(String playerName, String preferredTheme,
-                                  boolean soundEnabled, int preferredBotDifficulty) {
-        try {
-            PlayerProfile profile = loadProfile(playerName);
-            profile.setPreferredTheme(preferredTheme);
-            profile.setSoundEnabled(soundEnabled);
-            profile.setPreferredBotDifficulty(preferredBotDifficulty);
-            saveProfile(profile);
-
-            System.out.println("⚙️ Préférences mises à jour pour " + playerName);
-
-        } catch (BombermanException e) {
-            System.err.println("❌ Impossible de mettre à jour les préférences: " + e.getMessage());
-        }
-    }
-
-    /**
      * Classe pour les statistiques globales
      */
     public static class ProfileStats {
@@ -389,7 +370,6 @@ public class ProfileManager {
         public int getTotalProfiles() { return totalProfiles; }
         public int getTotalGamesPlayed() { return totalGamesPlayed; }
         public int getTotalWins() { return totalWins; }
-        public long getTotalPlayTime() { return totalPlayTime; }
         public String getMostActivePlayer() { return mostActivePlayer; }
         public int getMostGamesPlayed() { return mostGamesPlayed; }
     }
