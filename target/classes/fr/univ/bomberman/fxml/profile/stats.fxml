@@ -1,182 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- FILE: src/main/resources/fr/univ/bomberman/fxml/profile/profile_stats.fxml -->
-
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.ProfileStatsController">
-    <content>
-        <VBox spacing="20.0" styleClass="profile-container">
-            <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-            </padding>
+<TabPane prefHeight="600.0" prefWidth="700.0" styleClass="stats-container" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.ProfileStatsController">
 
-            <!-- En-tête du profil -->
-            <VBox alignment="CENTER" spacing="10.0" styleClass="profile-header">
-                <children>
-                    <Label fx:id="playerNameLabel" styleClass="profile-name" text="Nom du Joueur">
-                        <font>
-                            <Font name="System Bold" size="28.0" />
-                        </font>
-                    </Label>
-                    <Label fx:id="rankLabel" styleClass="profile-rank" text="🥉 Débutant">
-                        <font>
-                            <Font name="System Bold" size="18.0" />
-                        </font>
-                    </Label>
-                    <HBox alignment="CENTER" spacing="20.0">
-                        <children>
-                            <VBox alignment="CENTER">
-                                <children>
-                                    <Label text="Créé le:" />
-                                    <Label fx:id="creationDateLabel" text="01/01/2024" />
-                                </children>
-                            </VBox>
-                            <VBox alignment="CENTER">
-                                <children>
-                                    <Label text="Dernière partie:" />
-                                    <Label fx:id="lastPlayDateLabel" text="01/01/2024" />
-                                </children>
-                            </VBox>
-                        </children>
-                    </HBox>
-                </children>
-            </VBox>
-
-            <!-- Onglets pour les différentes sections -->
-            <TabPane prefHeight="255.0" prefWidth="630.0" styleClass="profile-tabs" tabClosingPolicy="UNAVAILABLE">
-
-                <!-- Onglet Statistiques Générales -->
-                <Tab text="📊 Statistiques Générales">
-                    <content>
-                        <VBox prefHeight="362.0" prefWidth="669.0" spacing="15.0">
-                            <children>
-                                <!-- Résumé rapide -->
-                                <GridPane hgap="15.0" styleClass="stats-summary" vgap="10.0">
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="120.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="120.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="120.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="120.0" />
-                                    </columnConstraints>
-
-                                    <!-- Ligne 1 -->
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                        <children>
-                                            <Label styleClass="stat-label" text="🎮 PARTIES JOUÉES" />
-                                            <Label fx:id="totalGamesLabel" styleClass="stat-value-big" text="0" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox alignment="CENTER" styleClass="stat-card win" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                        <children>
-                                            <Label styleClass="stat-label" text="🏆 VICTOIRES" />
-                                            <Label fx:id="totalWinsLabel" styleClass="stat-value-big" text="0" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox alignment="CENTER" styleClass="stat-card loss" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                                        <children>
-                                            <Label styleClass="stat-label" text="💀 DÉFAITES" />
-                                            <Label fx:id="totalLossesLabel" styleClass="stat-value-big" text="0" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox alignment="CENTER" styleClass="stat-card ratio" GridPane.columnIndex="3" GridPane.rowIndex="0">
-                                        <children>
-                                            <Label styleClass="stat-label" text="📈 RATIO VICTOIRES" />
-                                            <Label fx:id="winRatioLabel" styleClass="stat-value-big" text="0%" />
-                                        </children>
-                                    </VBox>
-
-                                    <!-- Ligne 2 -->
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                        <children>
-                                            <Label styleClass="stat-label" text="⏱️ TEMPS DE JEU" />
-                                            <Label fx:id="totalPlayTimeLabel" styleClass="stat-value" text="0h 0m" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                        <children>
-                                            <Label styleClass="stat-label" text="💣 BOMBES POSÉES" />
-                                            <Label fx:id="totalBombsLabel" styleClass="stat-value" text="0" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                        <children>
-                                            <Label styleClass="stat-label" text="🎯 ÉLIMINATIONS" />
-                                            <Label fx:id="eliminationsLabel" styleClass="stat-value" text="0" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox alignment="CENTER" styleClass="stat-card" GridPane.columnIndex="3" GridPane.rowIndex="1">
-                                        <children>
-                                            <Label styleClass="stat-label" text="⚰️ MORTS" />
-                                            <Label fx:id="deathsLabel" styleClass="stat-value" text="0" />
-                                        </children>
-                                    </VBox>
-                           <rowConstraints>
-                              <RowConstraints />
-                              <RowConstraints />
-                           </rowConstraints>
-                                </GridPane>
-
-                                <!-- Ratio K/D -->
-                                <HBox alignment="CENTER" spacing="10.0" styleClass="kd-ratio">
-                                    <children>
-                                        <Label styleClass="kd-label" text="💀 Ratio Éliminations/Morts:">
-                                            <font>
-                                                <Font name="System Bold" size="14.0" />
-                                            </font>
-                                        </Label>
-                                        <Label fx:id="kdRatioLabel" styleClass="kd-value" text="0.00">
-                                            <font>
-                                                <Font name="System Bold" size="16.0" />
-                                            </font>
-                                        </Label>
-                                    </children>
-                                </HBox>
-                            </children>
-                        </VBox>
-                    </content>
-                </Tab>
-
-                <!-- Onglet Statistiques par Mode -->
-                <Tab text="🎯 Stats par Mode">
+    <!-- Onglet Informations Générales -->
+    <tabs>
+        <Tab closable="false" styleClass="stats-tab" text="📋 Profil">
+            <content>
+                <ScrollPane fitToWidth="true" fitToHeight="true">
                     <content>
                         <VBox spacing="20.0">
                             <children>
+                                <!-- En-tête du profil -->
+                                <VBox alignment="CENTER" spacing="10.0" styleClass="profile-header">
+                                    <children>
+                                        <Label fx:id="playerNameLabel" styleClass="player-name" text="Nom du Joueur">
+                                            <font>
+                                                <Font name="System Bold" size="28.0" />
+                                            </font>
+                                        </Label>
+
+                                        <Label fx:id="rankLabel" styleClass="player-rank" text="🥉 Rang">
+                                            <font>
+                                                <Font name="System Bold" size="20.0" />
+                                            </font>
+                                        </Label>
+
+                                        <HBox spacing="20.0" alignment="CENTER">
+                                            <children>
+                                                <Label fx:id="creationDateLabel" styleClass="date-info" text="Créé le: --/--/----">
+                                                    <font>
+                                                        <Font size="12.0" />
+                                                    </font>
+                                                </Label>
+
+                                                <Label fx:id="lastPlayDateLabel" styleClass="date-info" text="Dernière partie: --/--/----">
+                                                    <font>
+                                                        <Font size="12.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Statistiques générales -->
+                                <VBox spacing="15.0" styleClass="stats-section">
+                                    <children>
+                                        <Label styleClass="section-title" text="📊 Statistiques Générales">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+
+                                        <GridPane hgap="20.0" vgap="10.0" styleClass="stats-grid">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                            <children>
+                                                <!-- Ligne 1 -->
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="🎮 Parties jouées" />
+                                                        <Label fx:id="totalGamesLabel" styleClass="stat-value" text="0" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="🏆 Victoires" />
+                                                        <Label fx:id="totalWinsLabel" styleClass="stat-value" text="0" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="💀 Défaites" />
+                                                        <Label fx:id="totalLossesLabel" styleClass="stat-value" text="0" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="📈 Taux victoire" />
+                                                        <Label fx:id="winRatioLabel" styleClass="stat-value" text="0%" />
+                                                    </children>
+                                                </VBox>
+
+                                                <!-- Ligne 2 -->
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="⏱️ Temps de jeu" />
+                                                        <Label fx:id="totalPlayTimeLabel" styleClass="stat-value" text="0h 0m" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="💣 Bombes posées" />
+                                                        <Label fx:id="totalBombsLabel" styleClass="stat-value" text="0" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="⚔️ Éliminations" />
+                                                        <Label fx:id="eliminationsLabel" styleClass="stat-value" text="0" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="💀 Morts" />
+                                                        <Label fx:id="deathsLabel" styleClass="stat-value" text="0" />
+                                                    </children>
+                                                </VBox>
+
+                                                <!-- Ligne 3 -->
+                                                <VBox alignment="CENTER" styleClass="stat-box" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <Label styleClass="stat-label" text="📊 Ratio K/D" />
+                                                        <Label fx:id="kdRatioLabel" styleClass="stat-value" text="0.00" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </GridPane>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </content>
+        </Tab>
+
+        <!-- Onglet Statistiques par Mode -->
+        <Tab closable="false" styleClass="stats-tab" text="🎮 Par Mode">
+            <content>
+                <ScrollPane fitToWidth="true" fitToHeight="true">
+                    <content>
+                        <VBox spacing="20.0">
+                            <children>
+                                <Label styleClass="section-title" text="🎯 Statistiques par Mode de Jeu">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+
                                 <!-- Mode Classique -->
                                 <VBox spacing="10.0" styleClass="mode-stats-section">
                                     <children>
-                                        <Label styleClass="mode-title" text="👥 MODE CLASSIQUE (2 Joueurs)">
+                                        <Label styleClass="mode-title" text="👥 Mode Classique (2 Joueurs)">
                                             <font>
                                                 <Font name="System Bold" size="16.0" />
                                             </font>
                                         </Label>
-                                        <HBox alignment="CENTER" spacing="30.0">
+
+                                        <HBox spacing="20.0" alignment="CENTER">
                                             <children>
-                                                <VBox alignment="CENTER">
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Parties" />
-                                                        <Label fx:id="classicGamesLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Parties" />
+                                                        <Label fx:id="classicGamesLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Victoires" />
-                                                        <Label fx:id="classicWinsLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Victoires" />
+                                                        <Label fx:id="classicWinsLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Taux de victoire" />
-                                                        <Label fx:id="classicWinRateLabel" styleClass="mode-stat-value" text="0%" />
+                                                        <Label styleClass="stat-label" text="Taux" />
+                                                        <Label fx:id="classicWinRateLabel" styleClass="stat-value" text="0%" />
                                                     </children>
                                                 </VBox>
                                             </children>
@@ -187,29 +201,32 @@
                                 <!-- Mode Bataille Royale -->
                                 <VBox spacing="10.0" styleClass="mode-stats-section">
                                     <children>
-                                        <Label styleClass="mode-title" text="👥👥 BATAILLE ROYALE (4 Joueurs)">
+                                        <Label styleClass="mode-title" text="⚔️ Bataille Royale (4 Joueurs)">
                                             <font>
                                                 <Font name="System Bold" size="16.0" />
                                             </font>
                                         </Label>
-                                        <HBox alignment="CENTER" spacing="30.0">
+
+                                        <HBox spacing="20.0" alignment="CENTER">
                                             <children>
-                                                <VBox alignment="CENTER">
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Parties" />
-                                                        <Label fx:id="battleRoyaleGamesLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Parties" />
+                                                        <Label fx:id="battleRoyaleGamesLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Victoires" />
-                                                        <Label fx:id="battleRoyaleWinsLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Victoires" />
+                                                        <Label fx:id="battleRoyaleWinsLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Taux de victoire" />
-                                                        <Label fx:id="battleRoyaleWinRateLabel" styleClass="mode-stat-value" text="0%" />
+                                                        <Label styleClass="stat-label" text="Taux" />
+                                                        <Label fx:id="battleRoyaleWinRateLabel" styleClass="stat-value" text="0%" />
                                                     </children>
                                                 </VBox>
                                             </children>
@@ -220,29 +237,32 @@
                                 <!-- Mode Bot -->
                                 <VBox spacing="10.0" styleClass="mode-stats-section">
                                     <children>
-                                        <Label styleClass="mode-title" text="🤖 MODE BOT (Intelligence Artificielle)">
+                                        <Label styleClass="mode-title" text="🤖 Contre IA">
                                             <font>
                                                 <Font name="System Bold" size="16.0" />
                                             </font>
                                         </Label>
-                                        <HBox alignment="CENTER" spacing="30.0">
+
+                                        <HBox spacing="20.0" alignment="CENTER">
                                             <children>
-                                                <VBox alignment="CENTER">
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Parties" />
-                                                        <Label fx:id="botGamesLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Parties" />
+                                                        <Label fx:id="botGamesLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Victoires" />
-                                                        <Label fx:id="botWinsLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Victoires" />
+                                                        <Label fx:id="botWinsLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Taux de victoire" />
-                                                        <Label fx:id="botWinRateLabel" styleClass="mode-stat-value" text="0%" />
+                                                        <Label styleClass="stat-label" text="Taux" />
+                                                        <Label fx:id="botWinRateLabel" styleClass="stat-value" text="0%" />
                                                     </children>
                                                 </VBox>
                                             </children>
@@ -253,29 +273,32 @@
                                 <!-- Mode CTF -->
                                 <VBox spacing="10.0" styleClass="mode-stats-section">
                                     <children>
-                                        <Label styleClass="mode-title" text="🏁 CAPTURE THE FLAG">
+                                        <Label styleClass="mode-title" text="🏁 Capture the Flag">
                                             <font>
                                                 <Font name="System Bold" size="16.0" />
                                             </font>
                                         </Label>
-                                        <HBox alignment="CENTER" spacing="30.0">
+
+                                        <HBox spacing="20.0" alignment="CENTER">
                                             <children>
-                                                <VBox alignment="CENTER">
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Parties" />
-                                                        <Label fx:id="ctfGamesLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Parties" />
+                                                        <Label fx:id="ctfGamesLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Victoires" />
-                                                        <Label fx:id="ctfWinsLabel" styleClass="mode-stat-value" text="0" />
+                                                        <Label styleClass="stat-label" text="Victoires" />
+                                                        <Label fx:id="ctfWinsLabel" styleClass="stat-value" text="0" />
                                                     </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER">
+
+                                                <VBox alignment="CENTER" styleClass="mode-stat-box">
                                                     <children>
-                                                        <Label text="Taux de victoire" />
-                                                        <Label fx:id="ctfWinRateLabel" styleClass="mode-stat-value" text="0%" />
+                                                        <Label styleClass="stat-label" text="Taux" />
+                                                        <Label fx:id="ctfWinRateLabel" styleClass="stat-value" text="0%" />
                                                     </children>
                                                 </VBox>
                                             </children>
@@ -283,139 +306,174 @@
                                     </children>
                                 </VBox>
                             </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
                         </VBox>
                     </content>
-                </Tab>
+                </ScrollPane>
+            </content>
+        </Tab>
 
-                <!-- Onglet Historique -->
-                <Tab text="📜 Historique">
-                    <content>
-                        <VBox spacing="10.0">
-                            <children>
-                                <Label styleClass="section-title" text="Dernières parties jouées">
-                                    <font>
-                                        <Font name="System Bold" size="16.0" />
-                                    </font>
-                                </Label>
-
-                                <TableView fx:id="historyTable" styleClass="history-table">
-                                    <columns>
-                                        <TableColumn fx:id="dateColumn" prefWidth="120.0" text="Date" />
-                                        <TableColumn fx:id="modeColumn" prefWidth="200.0" text="Mode de jeu" />
-                                        <TableColumn fx:id="resultColumn" prefWidth="120.0" text="Résultat" />
-                                        <TableColumn fx:id="durationColumn" prefWidth="80.0" text="Durée" />
-                                        <TableColumn fx:id="bombsColumn" prefWidth="80.0" text="Bombes" />
-                                        <TableColumn fx:id="eliminationsColumn" prefWidth="80.0" text="Élim." />
-                                    </columns>
-                                </TableView>
-                            </children>
-                        </VBox>
-                    </content>
-                </Tab>
-
-                <!-- Onglet Préférences -->
-                <Tab text="⚙️ Préférences">
+        <!-- Onglet Préférences -->
+        <Tab closable="false" styleClass="stats-tab" text="⚙️ Préférences">
+            <content>
+                <ScrollPane fitToWidth="true" fitToHeight="true">
                     <content>
                         <VBox spacing="20.0">
                             <children>
-                                <Label styleClass="section-title" text="Paramètres du profil">
+                                <Label styleClass="section-title" text="⚙️ Paramètres et Préférences">
                                     <font>
-                                        <Font name="System Bold" size="16.0" />
+                                        <Font name="System Bold" size="18.0" />
                                     </font>
                                 </Label>
 
                                 <!-- Formulaire de préférences -->
-                                <GridPane hgap="15.0" styleClass="preferences-form" vgap="15.0">
+                                <GridPane hgap="20.0" vgap="15.0" styleClass="preferences-form">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="NEVER" minWidth="150.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" />
                                     </columnConstraints>
-
-                                    <!-- Nom du joueur -->
-                                    <Label text="Nom du joueur:" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                        <font>
-                                            <Font name="System Bold" size="12.0" />
-                                        </font>
-                                    </Label>
-                                    <TextField fx:id="playerNameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-                                    <!-- Thème préféré -->
-                                    <Label text="Thème préféré:" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                        <font>
-                                            <Font name="System Bold" size="12.0" />
-                                        </font>
-                                    </Label>
-                                    <ComboBox fx:id="themeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-                                    <!-- Son activé -->
-                                    <Label text="Son activé:" GridPane.columnIndex="0" GridPane.rowIndex="2">
-                                        <font>
-                                            <Font name="System Bold" size="12.0" />
-                                        </font>
-                                    </Label>
-                                    <CheckBox fx:id="soundCheckBox" text="Activer les effets sonores" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-                                    <!-- Difficulté bot préférée -->
-                                    <Label text="Difficulté bot:" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                                        <font>
-                                            <Font name="System Bold" size="12.0" />
-                                        </font>
-                                    </Label>
-                                    <ComboBox fx:id="botDifficultyComboBox" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                           <rowConstraints>
-                              <RowConstraints />
-                              <RowConstraints />
-                              <RowConstraints />
-                              <RowConstraints />
-                           </rowConstraints>
-                                </GridPane>
-
-                                <!-- Bouton de sauvegarde -->
-                                <HBox alignment="CENTER">
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
                                     <children>
-                                        <Button fx:id="savePreferencesButton" onAction="#onSavePreferences" styleClass="primary-button" text="💾 Sauvegarder les préférences">
+                                        <!-- Nom du joueur -->
+                                        <Label styleClass="pref-label" text="👤 Nom du joueur:" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                             <font>
-                                                <Font name="System Bold" size="12.0" />
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                        <TextField fx:id="playerNameField" styleClass="pref-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                        <!-- Thème préféré -->
+                                        <Label styleClass="pref-label" text="🎨 Thème préféré:" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                        <ComboBox fx:id="themeComboBox" styleClass="pref-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                        <!-- Son activé -->
+                                        <Label styleClass="pref-label" text="🔊 Son activé:" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                        <CheckBox fx:id="soundCheckBox" styleClass="pref-field" text="Activer les effets sonores" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                        <!-- Difficulté bot préférée -->
+                                        <Label styleClass="pref-label" text="🤖 Difficulté IA:" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                        <ComboBox fx:id="botDifficultyComboBox" styleClass="pref-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                                        <!-- Bouton de sauvegarde -->
+                                        <Button fx:id="savePreferencesButton" onAction="#onSavePreferences" styleClass="main-button" text="💾 Sauvegarder les préférences" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
                                             </font>
                                         </Button>
                                     </children>
-                                </HBox>
+                                </GridPane>
+
+                                <!-- Gestion du profil -->
+                                <VBox spacing="15.0" styleClass="profile-management">
+                                    <children>
+                                        <Label styleClass="section-title" text="🗂️ Gestion du Profil">
+                                            <font>
+                                                <Font name="System Bold" size="16.0" />
+                                            </font>
+                                        </Label>
+
+                                        <HBox spacing="15.0" alignment="CENTER">
+                                            <children>
+                                                <Button fx:id="exportProfileButton" onAction="#onExportProfile" styleClass="action-button" text="📤 Exporter">
+                                                    <font>
+                                                        <Font size="12.0" />
+                                                    </font>
+                                                </Button>
+
+                                                <Button fx:id="importProfileButton" onAction="#onImportProfile" styleClass="action-button" text="📥 Importer">
+                                                    <font>
+                                                        <Font size="12.0" />
+                                                    </font>
+                                                </Button>
+
+                                                <Button fx:id="deleteProfileButton" onAction="#onDeleteProfile" styleClass="danger-button" text="🗑️ Supprimer">
+                                                    <font>
+                                                        <Font size="12.0" />
+                                                    </font>
+                                                </Button>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
                             </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
                         </VBox>
                     </content>
-                </Tab>
-            </TabPane>
+                </ScrollPane>
+            </content>
+        </Tab>
 
-            <!-- Boutons d'action -->
-            <HBox alignment="CENTER" spacing="15.0" styleClass="action-buttons">
-                <children>
-                    <Button fx:id="exportProfileButton" onAction="#onExportProfile" styleClass="secondary-button" text="📤 Exporter">
-                        <font>
-                            <Font size="12.0" />
-                        </font>
-                    </Button>
+        <!-- Onglet Historique -->
+        <Tab closable="false" styleClass="stats-tab" text="📜 Historique">
+            <content>
+                <VBox spacing="15.0">
+                    <children>
+                        <Label styleClass="section-title" text="📜 Historique des Parties">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
 
-                    <Button fx:id="importProfileButton" onAction="#onImportProfile" styleClass="secondary-button" text="📥 Importer">
-                        <font>
-                            <Font size="12.0" />
-                        </font>
-                    </Button>
+                        <TableView fx:id="historyTable" styleClass="history-table" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="dateColumn" minWidth="120.0" prefWidth="120.0" text="📅 Date" />
+                                <TableColumn fx:id="modeColumn" minWidth="150.0" prefWidth="150.0" text="🎮 Mode" />
+                                <TableColumn fx:id="resultColumn" minWidth="100.0" prefWidth="100.0" text="🏆 Résultat" />
+                                <TableColumn fx:id="durationColumn" minWidth="80.0" prefWidth="80.0" text="⏱️ Durée" />
+                                <TableColumn fx:id="bombsColumn" minWidth="80.0" prefWidth="80.0" text="💣 Bombes" />
+                                <TableColumn fx:id="eliminationsColumn" minWidth="100.0" prefWidth="100.0" text="⚔️ Éliminations" />
+                            </columns>
+                        </TableView>
 
-                    <Button fx:id="deleteProfileButton" onAction="#onDeleteProfile" styleClass="danger-button" text="🗑️ Supprimer">
-                        <font>
-                            <Font size="12.0" />
-                        </font>
-                    </Button>
+                        <Label styleClass="help-text" text="💡 Historique limité aux 50 parties les plus récentes">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </Tab>
+    </tabs>
 
-                    <Separator orientation="VERTICAL" />
-
-                    <Button fx:id="closeButton" onAction="#onClose" styleClass="primary-button" text="✅ Fermer">
-                        <font>
-                            <Font name="System Bold" size="12.0" />
-                        </font>
-                    </Button>
-                </children>
-            </HBox>
-        </VBox>
-    </content>
-</ScrollPane>
+    <!-- Bouton de fermeture -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="15.0">
+            <children>
+                <Button fx:id="closeButton" onAction="#onClose" styleClass="secondary-button" text="❌ Fermer">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+        </HBox>
+    </bottom>
+</TabPane>

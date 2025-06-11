@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20.0" styleClass="profile-selection-container" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.ProfileSelectionController">
+    <children>
+        <!-- Titre -->
+        <VBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Label styleClass="dialog-title" text="👤 GESTION DES PROFILS">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <Label styleClass="dialog-subtitle" text="Sélectionnez ou créez votre profil de joueur">
+                    <font>
+                        <Font name="System Italic" size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+
+        <!-- Zone principale -->
+        <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- Liste des profils -->
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="section-title" text="📂 Profils disponibles">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <ListView fx:id="profileListView" prefHeight="300.0" prefWidth="200.0" styleClass="profile-list">
+                            <VBox.vgrow>ALWAYS</VBox.vgrow>
+                        </ListView>
+
+                        <!-- Boutons de gestion -->
+                        <HBox spacing="10.0" alignment="CENTER">
+                            <children>
+                                <Button fx:id="createButton" onAction="#onCreateProfile" styleClass="action-button" text="➕ Nouveau">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="refreshButton" onAction="#onRefresh" styleClass="secondary-button" text="🔄">
+                                    <tooltip>
+                                        <Tooltip text="Actualiser la liste" />
+                                    </tooltip>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Informations du profil sélectionné -->
+                <VBox spacing="15.0" prefWidth="300.0">
+                    <children>
+                        <Label styleClass="section-title" text="ℹ️ Informations">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Nom du profil sélectionné -->
+                        <Label fx:id="selectedProfileLabel" styleClass="profile-name" text="Aucun profil sélectionné">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Détails du profil -->
+                        <ScrollPane fitToWidth="true" prefHeight="200.0" styleClass="info-scroll">
+                            <content>
+                                <Label fx:id="profileInfoLabel" styleClass="profile-info" text="Sélectionnez un profil pour voir ses informations" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </content>
+                        </ScrollPane>
+
+                        <!-- Boutons d'action -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Button fx:id="selectButton" disable="true" onAction="#onSelectProfile" styleClass="main-button" text="✅ Sélectionner ce profil">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Button>
+
+                                <HBox spacing="10.0" alignment="CENTER">
+                                    <children>
+                                        <Button fx:id="viewStatsButton" disable="true" onAction="#onViewStats" styleClass="action-button" text="📊 Statistiques">
+                                            <font>
+                                                <Font size="12.0" />
+                                            </font>
+                                        </Button>
+
+                                        <Button fx:id="deleteButton" disable="true" onAction="#onDeleteProfile" styleClass="danger-button" text="🗑️ Supprimer">
+                                            <font>
+                                                <Font size="12.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Boutons de contrôle -->
+        <HBox spacing="15.0" alignment="CENTER">
+            <children>
+                <Button fx:id="cancelButton" onAction="#onCancel" styleClass="secondary-button" text="❌ Annuler">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+
+        <!-- Aide -->
+        <VBox alignment="CENTER" spacing="5.0">
+            <children>
+                <Label styleClass="help-text" text="💡 Double-cliquez sur un profil pour le sélectionner rapidement">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+                <Label styleClass="help-text" text="📈 Les profils sauvegardent vos statistiques et préférences">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </children>
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</VBox>

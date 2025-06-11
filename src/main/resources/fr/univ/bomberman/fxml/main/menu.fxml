@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" spacing="25.0" styleClass="main-menu-container" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.MenuController">
+<VBox alignment="CENTER" spacing="25.0" styleClass="main-menu-container" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.MenuController">
     <children>
         <!-- Logo et titre -->
         <VBox alignment="CENTER" spacing="10.0">
