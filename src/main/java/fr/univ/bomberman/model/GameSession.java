@@ -41,78 +41,9 @@ public class GameSession {
     }
 
     /**
-     * Constructeur pour créer une session à partir d'un jeu terminé (simplifié)
-     */
-    public GameSession(Game game, String playerName) {
-        this();
-        this.endTime = LocalDateTime.now();
-
-        // Informations de base
-        if (game != null) {
-            this.gameMode = game.getGameMode();
-            this.playersCount = game.getPlayerCount();
-            this.mapSize = game.getBoard().getCols() + "x" + game.getBoard().getRows();
-
-            // Déterminer si c'est un jeu contre bot
-            this.isBotGame = game.hasBots();
-            if (isBotGame && game.getBot() != null) {
-                this.botDifficulty = game.getBot().getDifficulty();
-            }
-
-            // Déterminer le gagnant et si le joueur a gagné
-            Player winner = game.getWinner();
-            if (winner != null) {
-                this.winnerName = winner.getName();
-                this.won = winner.getName().equals(playerName);
-            } else {
-                this.won = false; // Égalité
-                this.winnerName = "Égalité";
-            }
-
-            // Statistiques approximatives
-            this.bombsPlaced = (int) (Math.random() * 5) + 1;
-            this.eliminationsDealt = won ? 1 : 0;
-
-            Player player = game.getPlayerByName(playerName);
-            if (player != null) {
-                this.deaths = player.isEliminated() ? 1 : 0;
-
-                // CTF spécifique
-                if (gameMode == GameMode.CAPTURE_THE_FLAG) {
-                    this.flagsCaptured = player.getCapturedFlagsCount();
-                }
-            }
-        }
-
-        // Calculer la durée
-        finalize();
-    }
-
-    /**
-     * Créer une session manuellement avec toutes les données
-     */
-    public GameSession(LocalDateTime startTime, GameMode gameMode, boolean won,
-                       boolean isBotGame, int botDifficulty, int bombsPlaced,
-                       int eliminationsDealt, int deaths, int playersCount) {
-        this.startTime = startTime;
-        this.endTime = LocalDateTime.now();
-        this.gameMode = gameMode != null ? gameMode : GameMode.REAL_TIME;
-        this.won = won;
-        this.isBotGame = isBotGame;
-        this.botDifficulty = botDifficulty;
-        this.bombsPlaced = bombsPlaced;
-        this.eliminationsDealt = eliminationsDealt;
-        this.deaths = deaths;
-        this.playersCount = playersCount;
-        this.mapSize = "15x13";
-        this.winnerName = won ? "Joueur" : "Adversaire";
-
-        finalize();
-    }
-
-    /**
      * Finalise la session (appelé à la fin de partie)
      */
+
     public void finalize() {
         this.endTime = LocalDateTime.now();
         if (startTime != null) {
@@ -187,51 +118,12 @@ public class GameSession {
         return "Inconnue";
     }
 
-    /**
-     * Calcule un score de performance (pour classement)
-     */
-    public int getPerformanceScore() {
-        int score = 0;
-
-        // Points pour la victoire
-        if (won) score += 100;
-
-        // Points pour les éliminations
-        score += eliminationsDealt * 25;
-
-        // Points pour survivre
-        if (deaths == 0) score += 50;
-
-        // Bonus pour bot difficile
-        if (isBotGame && won) {
-            score += botDifficulty * 20;
-        }
-
-        // Bonus pour parties longues
-        if (durationSeconds > 120) score += 10;
-
-        // Bonus CTF
-        if (gameMode == GameMode.CAPTURE_THE_FLAG) {
-            score += flagsCaptured * 30;
-        }
-
-        return score;
-    }
-
     // ============================================================================
     // GETTERS ET SETTERS
     // ============================================================================
 
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
     }
 
     public void setEndTime(LocalDateTime endTime) {
@@ -298,20 +190,8 @@ public class GameSession {
         return flagsCaptured;
     }
 
-    public void setFlagsCaptured(int flagsCaptured) {
-        this.flagsCaptured = flagsCaptured;
-    }
-
-    public int getPlayersCount() {
-        return playersCount;
-    }
-
     public void setPlayersCount(int playersCount) {
         this.playersCount = playersCount;
-    }
-
-    public String getWinnerName() {
-        return winnerName;
     }
 
     public void setWinnerName(String winnerName) {
@@ -326,11 +206,4 @@ public class GameSession {
         this.durationSeconds = durationSeconds;
     }
 
-    public String getMapSize() {
-        return mapSize;
-    }
-
-    public void setMapSize(String mapSize) {
-        this.mapSize = mapSize;
-    }
 }
