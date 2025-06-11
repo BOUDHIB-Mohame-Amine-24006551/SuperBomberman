@@ -691,15 +691,7 @@ public class Game {
         return new ArrayList<>(activeExplosions);
     }
 
-    /**
-     * Trouve un joueur par son nom
-     */
-    public Player getPlayerByName(String name) {
-        return players.stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst()
-                .orElse(null);
-    }
+
 
     /**
      * ✅ MÉTHODE MODIFIÉE : Déplacement avec gestion des drapeaux
