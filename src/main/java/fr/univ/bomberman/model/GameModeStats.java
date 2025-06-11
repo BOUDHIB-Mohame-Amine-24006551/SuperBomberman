@@ -78,37 +78,6 @@ public class GameModeStats {
         this.wins = wins;
     }
 
-    public int getLosses() {
-        return losses;
-    }
-
-    public void setLosses(int losses) {
-        this.losses = losses;
-    }
-
-    public int getBombsPlaced() {
-        return bombsPlaced;
-    }
-
-    public void setBombsPlaced(int bombsPlaced) {
-        this.bombsPlaced = bombsPlaced;
-    }
-
-    public int getEliminationsDealt() {
-        return eliminationsDealt;
-    }
-
-    public void setEliminationsDealt(int eliminationsDealt) {
-        this.eliminationsDealt = eliminationsDealt;
-    }
-
-    public int getDeaths() {
-        return deaths;
-    }
-
-    public void setDeaths(int deaths) {
-        this.deaths = deaths;
-    }
 
     public long getTotalPlayTimeSeconds() {
         return totalPlayTimeSeconds;
@@ -118,44 +87,12 @@ public class GameModeStats {
         this.totalPlayTimeSeconds = totalPlayTimeSeconds;
     }
 
-    public int getBestStreak() {
-        return bestStreak;
-    }
-
-    public void setBestStreak(int bestStreak) {
-        this.bestStreak = bestStreak;
-    }
-
-    public int getCurrentStreak() {
-        return currentStreak;
-    }
-
-    public void setCurrentStreak(int currentStreak) {
-        this.currentStreak = currentStreak;
-    }
-
-    public int getFlagsCaptured() {
-        return flagsCaptured;
-    }
-
-    public void setFlagsCaptured(int flagsCaptured) {
-        this.flagsCaptured = flagsCaptured;
-    }
-
     public int getBotWins() {
         return botWins;
     }
 
     public void setBotWins(int botWins) {
         this.botWins = botWins;
-    }
-
-    public int[] getBotWinsByDifficulty() {
-        return botWinsByDifficulty;
-    }
-
-    public void setBotWinsByDifficulty(int[] botWinsByDifficulty) {
-        this.botWinsByDifficulty = botWinsByDifficulty;
     }
 
     public void addGame(boolean won) {
