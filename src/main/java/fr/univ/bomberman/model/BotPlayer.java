@@ -3,10 +3,7 @@ package fr.univ.bomberman.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.LinkedList;
+
 
 /**
  * Représente un joueur contrôlé par l'IA (bot) - VERSION AGRESSIVE STYLE FANTÔME PAC-MAN
@@ -112,7 +109,6 @@ public class BotPlayer extends Player {
         Position playerPos = findNearestPlayer(game);
         if (playerPos == null) return;
 
-        Position myPos = getPosition();
         int distance = getDistanceTo(playerPos);
 
         // Mettre à jour la dernière position connue du joueur
@@ -186,13 +182,7 @@ public class BotPlayer extends Player {
             return false;
         }
 
-        // Calculer le chemin direct vers le joueur
-        int dx = playerPos.getX() - myPos.getX();
-        int dy = playerPos.getY() - myPos.getY();
 
-        // Normaliser la direction (1, 0, ou -1)
-        int stepX = Integer.compare(dx, 0);
-        int stepY = Integer.compare(dy, 0);
 
         // Vérifier s'il y a des briques destructibles dans le chemin direct
         List<Position> bricksInPath = findBricksInDirectPath(myPos, playerPos, game);
@@ -402,7 +392,7 @@ public class BotPlayer extends Player {
         Position playerPos = findNearestPlayer(game);
         if (playerPos == null) return BotAction.NONE;
 
-        Position myPos = getPosition();
+
 
         // ALGORITHME DE POURSUITE DIRECTE (style fantôme Pac-Man)
         BotAction directMove = findDirectPathToPlayer(game, playerPos);
@@ -869,24 +859,9 @@ public class BotPlayer extends Player {
         return nearest;
     }
 
-    /**
-     * ✅ NOUVELLE MÉTHODE: Obtient la vitesse du bot selon la difficulté
-     */
-    public long getBotMoveDelay() {
-        return botMoveDelay;
-    }
 
-    /**
-     * ✅ NOUVELLE MÉTHODE: Obtient le pourcentage de vitesse par rapport au joueur
-     */
-    public String getSpeedDescription() {
-        switch (difficulty) {
-            case 1: return "Même vitesse que vous";
-            case 2: return "25% plus rapide que vous";
-            case 3: return "50% plus rapide que vous";
-            default: return "Vitesse normale";
-        }
-    }
+
+
     public int getDifficulty() {
         return difficulty;
     }
