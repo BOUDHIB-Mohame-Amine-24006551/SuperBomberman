@@ -157,4 +157,13 @@ public class GameModeStats {
     public void setBotWinsByDifficulty(int[] botWinsByDifficulty) {
         this.botWinsByDifficulty = botWinsByDifficulty;
     }
+
+    public void addGame(boolean won) {
+        gamesPlayed++;
+        if (won) {
+            wins++;
+        } else {
+            losses++;
+        }
+    }
 }

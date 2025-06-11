@@ -1,0 +1,433 @@
+/* FILE: src/main/resources/fr/univ/bomberman/css/profile/profile_selection.css */
+
+/* ✅ STYLES GÉNÉRAUX */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #ecf0f1, #bdc3c7);
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ✅ TITRE PRINCIPAL */
+.label {
+    -fx-text-fill: #2c3e50;
+}
+
+/* ✅ TITRE AVEC EMOJI */
+.label:contains("🎮 GESTION DES PROFILS BOMBERMAN") {
+    -fx-text-fill: #e74c3c;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 1, 1);
+}
+
+/* ✅ SOUS-TITRES */
+.label:contains("📋 Profils existants:"),
+.label:contains("📋 Profil sélectionné:"),
+.label:contains("🆕 Créer un nouveau profil:"),
+.label:contains("⚙️ Actions sur le profil sélectionné:") {
+    -fx-text-fill: #34495e;
+    -fx-font-weight: bold;
+}
+
+/* ✅ TABLE VIEW */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-color: #2980b9;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #3498db;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e3f2fd;
+}
+
+.table-cell {
+    -fx-alignment: center-left;
+    -fx-padding: 5px;
+}
+
+/* ✅ BOUTONS PRINCIPAUX */
+.button {
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 1, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 0, 2);
+}
+
+.button:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 1, 0, 0, 1);
+}
+
+/* ✅ BOUTON SÉLECTIONNER (PRINCIPAL) */
+.button:contains("✅ Sélectionner") {
+    -fx-background-color: linear-gradient(to bottom, #27ae60, #229954);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.button:contains("✅ Sélectionner"):hover {
+    -fx-background-color: linear-gradient(to bottom, #2ecc71, #27ae60);
+}
+
+/* ✅ BOUTON ANNULER */
+.button:contains("❌ Annuler") {
+    -fx-background-color: linear-gradient(to bottom, #95a5a6, #7f8c8d);
+    -fx-text-fill: white;
+}
+
+.button:contains("❌ Annuler"):hover {
+    -fx-background-color: linear-gradient(to bottom, #bdc3c7, #95a5a6);
+}
+
+/* ✅ BOUTON CRÉER */
+.button:contains("✨ Créer") {
+    -fx-background-color: linear-gradient(to bottom, #f39c12, #e67e22);
+    -fx-text-fill: white;
+}
+
+.button:contains("✨ Créer"):hover {
+    -fx-background-color: linear-gradient(to bottom, #f1c40f, #f39c12);
+}
+
+/* ✅ BOUTON SUPPRIMER */
+.button:contains("🗑️ Supprimer") {
+    -fx-background-color: linear-gradient(to bottom, #e74c3c, #c0392b);
+    -fx-text-fill: white;
+}
+
+.button:contains("🗑️ Supprimer"):hover {
+    -fx-background-color: linear-gradient(to bottom, #ec7063, #e74c3c);
+}
+
+/* ✅ BOUTONS D'ACTION */
+.button:contains("📊 Statistiques") {
+    -fx-background-color: linear-gradient(to bottom, #9b59b6, #8e44ad);
+    -fx-text-fill: white;
+}
+
+.button:contains("📋 Dupliquer") {
+    -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+    -fx-text-fill: white;
+}
+
+.button:contains("📥 Importer"),
+.button:contains("📤 Exporter") {
+    -fx-background-color: linear-gradient(to bottom, #1abc9c, #16a085);
+    -fx-text-fill: white;
+}
+
+.button:contains("🔄 Actualiser") {
+    -fx-background-color: linear-gradient(to bottom, #34495e, #2c3e50);
+    -fx-text-fill: white;
+}
+
+/* ✅ CHAMP DE TEXTE */
+.text-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 5px;
+}
+
+.text-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+}
+
+/* ✅ SÉPARATEURS */
+.separator {
+    -fx-background-color: #bdc3c7;
+}
+
+/* ✅ SCROLL PANE */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #ffffff;
+}
+
+/* ✅ SPLIT PANE */
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.split-pane-divider {
+    -fx-background-color: #bdc3c7;
+    -fx-padding: 2px;
+}
+
+/* ✅ GRID PANE */
+.grid-pane {
+    -fx-background-color: transparent;
+}
+
+/* ✅ EFFETS SPÉCIAUX POUR LES LABELS IMPORTANTS */
+.label:contains("Aucun profil sélectionné") {
+    -fx-text-fill: #e74c3c;
+    -fx-font-style: italic;
+}
+
+.label:contains("💡 Max 15 caractères") {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 10px;
+}
+
+/* ✅ ANIMATIONS POUR LES BOUTONS DÉSACTIVÉS */
+.button:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+}
+
+.button:disabled:hover {
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-effect: none;
+}
+
+/* ✅ STYLE POUR LES TOOLTIPS */
+.tooltip {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-background-radius: 5px;
+    -fx-font-size: 11px;
+    -fx-padding: 5px;
+}
+
+/* ✅ RESPONSIVE - ADAPTATION POUR PETITS ÉCRANS */
+@media screen and (max-width: 800px) {
+    .button {
+        -fx-font-size: 10px;
+        -fx-padding: 3px 6px;
+    }
+
+    .table-view {
+        -fx-font-size: 10px;
+    }
+}
+
+/* ✅ STYLES POUR LES ÉTATS SPÉCIAUX */
+.profile-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.profile-card:hover {
+    -fx-border-color: #3498db;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.3), 8, 0, 0, 3);
+}
+
+/* ✅ INDICATEURS DE STATUT */
+.status-indicator {
+    -fx-background-radius: 50%;
+    -fx-min-width: 12px;
+    -fx-min-height: 12px;
+    -fx-max-width: 12px;
+    -fx-max-height: 12px;
+}
+
+.status-online {
+    -fx-background-color: #27ae60;
+}
+
+.status-away {
+    -fx-background-color: #f39c12;
+}
+
+.status-offline {
+    -fx-background-color: #95a5a6;
+}
+
+/* ✅ BARRES DE PROGRESSION POUR LES STATS */
+.progress-bar {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 10px;
+}
+
+.progress-bar .bar {
+    -fx-background-color: linear-gradient(to right, #3498db, #2ecc71);
+    -fx-background-radius: 10px;
+    -fx-background-insets: 0;
+}
+
+/* ✅ BADGES ET RANGS */
+.rank-badge {
+    -fx-background-radius: 15px;
+    -fx-padding: 3px 8px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+}
+
+.rank-bronze {
+    -fx-background-color: #cd7f32;
+}
+
+.rank-silver {
+    -fx-background-color: #c0c0c0;
+}
+
+.rank-gold {
+    -fx-background-color: #ffd700;
+}
+
+.rank-platinum {
+    -fx-background-color: #e5e4e2;
+}
+
+.rank-diamond {
+    -fx-background-color: #b9f2ff;
+}
+
+/* ✅ ANIMATIONS */
+@keyframes fadeIn {
+    from { -fx-opacity: 0; }
+    to { -fx-opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { -fx-translate-y: -20px; -fx-opacity: 0; }
+    to { -fx-translate-y: 0; -fx-opacity: 1; }
+}
+
+.fade-in {
+    -fx-animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in {
+    -fx-animation: slideIn 0.4s ease-out;
+}
+
+/* ✅ STYLES POUR LES ALERTES ET NOTIFICATIONS */
+.notification {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.notification-success {
+    -fx-border-color: #27ae60;
+    -fx-background-color: #d5f4e6;
+}
+
+.notification-warning {
+    -fx-border-color: #f39c12;
+    -fx-background-color: #fef5e7;
+}
+
+.notification-error {
+    -fx-border-color: #e74c3c;
+    -fx-background-color: #fadbd8;
+}
+
+/* ✅ STYLES POUR LES ICÔNES ET EMOJIS */
+.emoji-label {
+    -fx-font-size: 16px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 1, 0, 1, 1);
+}
+
+/* ✅ THÈME SOMBRE (OPTIONNEL) */
+.root.dark-theme {
+    -fx-background-color: linear-gradient(to bottom, #34495e, #2c3e50);
+}
+
+.dark-theme .label {
+    -fx-text-fill: #ecf0f1;
+}
+
+.dark-theme .table-view {
+    -fx-background-color: #34495e;
+    -fx-border-color: #4a4a4a;
+}
+
+.dark-theme .table-row-cell {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ecf0f1;
+}
+
+.dark-theme .table-row-cell:odd {
+    -fx-background-color: #2c3e50;
+}
+
+.dark-theme .text-field {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ecf0f1;
+    -fx-border-color: #4a4a4a;
+}
+
+/* ✅ EFFETS VISUELS AVANCÉS */
+.glow-effect {
+    -fx-effect: dropshadow(three-pass-box, #3498db, 10, 0.5, 0, 0);
+}
+
+.pulse-effect {
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.6), 15, 0.7, 0, 0);
+}
+
+/* ✅ STYLES POUR LES STATISTIQUES */
+.stat-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.win-rate-high {
+    -fx-text-fill: #27ae60;
+}
+
+.win-rate-medium {
+    -fx-text-fill: #f39c12;
+}
+
+.win-rate-low {
+    -fx-text-fill: #e74c3c;
+}
