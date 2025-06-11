@@ -243,23 +243,26 @@
                     </font>
                 </Button>
 
-                <Button fx:id="selectProfileButton" maxWidth="1.7976931348623157E308" onAction="#onSelectProfile" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="📋 Sélectionner Profil" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Button fx:id="selectProfileButton" onAction="#onSelectProfile" styleClass="control-button" text="👤 Sélectionner Profil">
                     <font>
-                        <Font name="System Bold" size="12.0" />
+                        <Font name="System Bold" size="10.0" />
                     </font>
                 </Button>
-                <HBox alignment="CENTER" spacing="10.0" />
+                <Button fx:id="selectLevelButton" onAction="#onSelectLevel" styleClass="control-button" text="🎮 Sélectionner Niveau">
+                    <font>
+                        <Font name="System Bold" size="10.0" />
+                    </font>
+                </Button>
+                <Button fx:id="backButton" onAction="#onBack" styleClass="control-button" text="⬅️ Retour">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
             </children>
         </HBox>
         <!-- Boutons navigation -->
         <HBox alignment="CENTER" spacing="15.0">
             <children>
-                <Button fx:id="backButton" onAction="#onBack" styleClass="nav-button" text="← Retour">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-
                 <Button fx:id="quitButton" onAction="#onQuit" styleClass="nav-button-quit" text="❌ Quitter">
                     <font>
                         <Font size="14.0" />

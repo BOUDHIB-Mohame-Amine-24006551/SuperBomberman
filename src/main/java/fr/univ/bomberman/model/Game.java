@@ -22,7 +22,7 @@ public class Game {
     private GameMode gameMode;
     private long gameStartTime;
     private boolean statsUpdated = false;
-
+    private String levelPath; // Chemin du fichier de niveau
 
     // ============================================================================
     // ✅ NOUVELLES PROPRIÉTÉS POUR CTF
@@ -37,8 +37,21 @@ public class Game {
      * Constructeur par défaut : Crée une partie 2 joueurs classique
      */
     public Game() {
+        this("src/main/resources/fr/univ/bomberman/level/default/level.json");
+    }
+
+    /**
+     * Constructeur avec fichier de niveau spécifié
+     */
+    public Game(String levelPath) {
         this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
+        this.levelPath = levelPath;
+        try {
+            this.board = new Board(levelPath);
+        } catch (BombermanException e) {
+            System.err.println("Erreur lors du chargement du niveau, utilisation du niveau par défaut: " + e.getMessage());
+            this.board = new Board(15, 13);
+        }
         this.players = new ArrayList<>();
 
         // Créer 2 joueurs par défaut
@@ -47,11 +60,6 @@ public class Game {
         players.add(player1);
         players.add(player2);
 
-        // S'assurer que les zones de départ sont libres
-        clearStartingArea(new Position(1, 1));
-        clearStartingArea(new Position(board.getCols() - 2, board.getRows() - 2));
-
-        this.currentPlayerIndex = 0;
         this.activeBombs = new ArrayList<>();
         this.activeExplosions = new ArrayList<>();
         this.gameOver = false;
@@ -68,7 +76,16 @@ public class Game {
      * Constructeur avec mode de jeu spécifié
      */
     public Game(GameMode mode) {
-        this(); // Appelle le constructeur par défaut
+        this();
+        this.gameMode = mode;
+        this.gameStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * Constructeur avec mode de jeu et fichier de niveau spécifiés
+     */
+    public Game(GameMode mode, String levelPath) {
+        this(levelPath);
         this.gameMode = mode;
         this.gameStartTime = System.currentTimeMillis();
     }
@@ -77,9 +94,7 @@ public class Game {
      * Constructeur avec le nombre de joueurs spécifié
      */
     public Game(int numberOfPlayers) {
-        this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
-        this.players = new ArrayList<>();
+        this();
         this.gameStartTime = System.currentTimeMillis();
 
         // Positions de départ pour 4 joueurs (aux 4 coins)
@@ -94,10 +109,49 @@ public class Game {
         String[] defaultNames = {"Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"};
 
         // Créer les joueurs
+        this.players.clear();
         for (int i = 0; i < Math.min(numberOfPlayers, 4); i++) {
             Player player = new Player(defaultNames[i], startPositions[i]);
             players.add(player);
-            clearStartingArea(startPositions[i]);
+        }
+
+        this.currentPlayerIndex = 0;
+        this.activeBombs = new ArrayList<>();
+        this.activeExplosions = new ArrayList<>();
+        this.gameOver = false;
+
+        // Initialiser les propriétés CTF
+        this.flags = new ArrayList<>();
+        this.flagSetupPhase = false;
+        this.currentPlayerSettingFlag = -1;
+        this.proposedFlagPositions = new Position[0];
+
+        System.out.println("🎮 Partie " + numberOfPlayers + " joueurs créée !");
+    }
+
+    /**
+     * Constructeur avec nombre de joueurs et fichier de niveau spécifiés
+     */
+    public Game(int numberOfPlayers, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
+
+        // Positions de départ pour 4 joueurs (aux 4 coins)
+        Position[] startPositions = {
+                new Position(1, 1),                                    // Joueur 1: Coin haut-gauche
+                new Position(board.getCols() - 2, 1),                  // Joueur 2: Coin haut-droite
+                new Position(1, board.getRows() - 2),                  // Joueur 3: Coin bas-gauche
+                new Position(board.getCols() - 2, board.getRows() - 2) // Joueur 4: Coin bas-droite
+        };
+
+        // Noms par défaut des joueurs
+        String[] defaultNames = {"Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"};
+
+        // Créer les joueurs
+        this.players.clear();
+        for (int i = 0; i < Math.min(numberOfPlayers, 4); i++) {
+            Player player = new Player(defaultNames[i], startPositions[i]);
+            players.add(player);
         }
 
         this.currentPlayerIndex = 0;
@@ -118,9 +172,7 @@ public class Game {
      * Constructeur avec noms personnalisés pour 4 joueurs
      */
     public Game(String[] playerNames) {
-        this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
-        this.players = new ArrayList<>();
+        this();
         this.gameStartTime = System.currentTimeMillis();
 
         // Positions de départ pour 4 joueurs
@@ -132,6 +184,7 @@ public class Game {
         };
 
         // Créer les joueurs avec les noms fournis
+        this.players.clear();
         for (int i = 0; i < Math.min(playerNames.length, 4); i++) {
             String name = (playerNames[i] != null && !playerNames[i].trim().isEmpty())
                     ? playerNames[i].trim()
@@ -139,7 +192,6 @@ public class Game {
 
             Player player = new Player(name, startPositions[i]);
             players.add(player);
-            clearStartingArea(startPositions[i]);
         }
 
         this.currentPlayerIndex = 0;
@@ -156,15 +208,50 @@ public class Game {
         System.out.println("🎮 Partie " + playerNames.length + " joueurs créée avec noms personnalisés !");
     }
 
-    // ============================================================================
-    // ✅ NOUVEAU CONSTRUCTEUR POUR CTF
-    // ============================================================================
+    /**
+     * Constructeur avec noms personnalisés et fichier de niveau spécifiés
+     */
+    public Game(String[] playerNames, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
+
+        // Positions de départ pour 4 joueurs
+        Position[] startPositions = {
+                new Position(1, 1),                                    // Coin haut-gauche
+                new Position(board.getCols() - 2, 1),                  // Coin haut-droite
+                new Position(1, board.getRows() - 2),                  // Coin bas-gauche
+                new Position(board.getCols() - 2, board.getRows() - 2) // Coin bas-droite
+        };
+
+        // Créer les joueurs avec les noms fournis
+        this.players.clear();
+        for (int i = 0; i < Math.min(playerNames.length, 4); i++) {
+            String name = (playerNames[i] != null && !playerNames[i].trim().isEmpty())
+                    ? playerNames[i].trim()
+                    : "Joueur " + (i + 1);
+
+            Player player = new Player(name, startPositions[i]);
+            players.add(player);
+        }
+
+        this.currentPlayerIndex = 0;
+        this.activeBombs = new ArrayList<>();
+        this.activeExplosions = new ArrayList<>();
+        this.gameOver = false;
+
+        // Initialiser les propriétés CTF
+        this.flags = new ArrayList<>();
+        this.flagSetupPhase = false;
+        this.currentPlayerSettingFlag = -1;
+        this.proposedFlagPositions = new Position[0];
+
+        System.out.println("🎮 Partie " + playerNames.length + " joueurs créée avec noms personnalisés !");
+    }
 
     /**
      * Constructeur pour le mode Capture the Flag
      */
     public Game(String[] playerNames, GameMode mode) {
-        // ✅ APPEL À this() EN PREMIER
         this();
         this.gameStartTime = System.currentTimeMillis();
 
@@ -188,7 +275,6 @@ public class Game {
 
                 Player player = new Player(name, startPositions[i]);
                 players.add(player);
-                clearStartingArea(startPositions[i]);
             }
 
             System.out.println("🎮 Partie " + playerNames.length + " joueurs créée en mode " + mode.getDisplayName());
@@ -197,7 +283,78 @@ public class Game {
 
         // Initialisation spéciale pour CTF
         this.gameMode = GameMode.CAPTURE_THE_FLAG;
-        this.board = new Board(15, 13);
+        this.players.clear(); // Vider les joueurs par défaut
+        this.flags = new ArrayList<>();
+        this.flagSetupPhase = true;
+        this.currentPlayerSettingFlag = 0;
+        this.proposedFlagPositions = new Position[playerNames.length];
+
+        // Positions de départ pour les joueurs (aux coins)
+        Position[] startPositions = {
+                new Position(1, 1),                                    // Coin haut-gauche
+                new Position(board.getCols() - 2, 1),                  // Coin haut-droite
+                new Position(1, board.getRows() - 2),                  // Coin bas-gauche
+                new Position(board.getCols() - 2, board.getRows() - 2) // Coin bas-droite
+        };
+
+        // Créer les joueurs avec capacité CTF
+        for (int i = 0; i < Math.min(playerNames.length, 4); i++) {
+            String name = (playerNames[i] != null && !playerNames[i].trim().isEmpty())
+                    ? playerNames[i].trim()
+                    : "Joueur " + (i + 1);
+
+            Player player = new Player(name, startPositions[i]);
+            player.setCanPlaceBombWhenEliminated(true); // ✅ CTF: joueurs éliminés peuvent bombarder
+            players.add(player);
+
+            // Positions par défaut des drapeaux (près des spawns mais pas dessus)
+            proposedFlagPositions[i] = getDefaultFlagPosition(i, startPositions[i]);
+        }
+
+        this.currentPlayerIndex = 0;
+        this.activeBombs.clear();
+        this.activeExplosions.clear();
+        this.gameOver = false;
+
+        System.out.println("🏁 Mode CAPTURE THE FLAG créé avec " + playerNames.length + " joueurs !");
+        System.out.println("📍 Phase de placement des drapeaux commencée...");
+    }
+
+    /**
+     * Constructeur pour le mode Capture the Flag avec fichier de niveau spécifié
+     */
+    public Game(String[] playerNames, GameMode mode, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
+
+        if (mode != GameMode.CAPTURE_THE_FLAG) {
+            // Utiliser le constructeur normal pour les autres modes
+            this.gameMode = mode;
+
+            // Reconfigurer pour le mode demandé
+            this.players.clear();
+            Position[] startPositions = {
+                    new Position(1, 1),
+                    new Position(board.getCols() - 2, 1),
+                    new Position(1, board.getRows() - 2),
+                    new Position(board.getCols() - 2, board.getRows() - 2)
+            };
+
+            for (int i = 0; i < Math.min(playerNames.length, 4); i++) {
+                String name = (playerNames[i] != null && !playerNames[i].trim().isEmpty())
+                        ? playerNames[i].trim()
+                        : "Joueur " + (i + 1);
+
+                Player player = new Player(name, startPositions[i]);
+                players.add(player);
+            }
+
+            System.out.println("🎮 Partie " + playerNames.length + " joueurs créée en mode " + mode.getDisplayName());
+            return;
+        }
+
+        // Initialisation spéciale pour CTF
+        this.gameMode = GameMode.CAPTURE_THE_FLAG;
         this.players.clear(); // Vider les joueurs par défaut
         this.flags = new ArrayList<>();
         this.flagSetupPhase = true;
@@ -237,13 +394,12 @@ public class Game {
     }
 
     public Game(String playerName, int botDifficulty) {
-        this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
-        this.players = new ArrayList<>();
+        this();
         this.gameStartTime = System.currentTimeMillis();
 
         // Créer le joueur humain
         Player human = new Player(playerName, new Position(1, 1));
+        players.clear();
         players.add(human);
 
         // Créer le bot
@@ -251,9 +407,37 @@ public class Game {
         BotPlayer bot = new BotPlayer(botName, new Position(board.getCols() - 2, board.getRows() - 2), botDifficulty);
         players.add(bot);
 
-        // S'assurer que les zones de départ sont libres
-        clearStartingArea(new Position(1, 1));
-        clearStartingArea(new Position(board.getCols() - 2, board.getRows() - 2));
+        this.currentPlayerIndex = 0;
+        this.activeBombs = new ArrayList<>();
+        this.activeExplosions = new ArrayList<>();
+        this.gameOver = false;
+
+        // Initialiser les propriétés CTF
+        this.flags = new ArrayList<>();
+        this.flagSetupPhase = false;
+        this.currentPlayerSettingFlag = -1;
+        this.proposedFlagPositions = new Position[0];
+
+        System.out.println("🤖 Partie contre bot créée !");
+        System.out.println("👤 " + playerName + " VS 🤖 " + botName);
+    }
+
+    /**
+     * Constructeur pour le mode bot avec fichier de niveau spécifié
+     */
+    public Game(String playerName, int botDifficulty, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
+
+        // Créer le joueur humain
+        Player human = new Player(playerName, new Position(1, 1));
+        players.clear();
+        players.add(human);
+
+        // Créer le bot
+        String botName = "Bot " + getBotDifficultyName(botDifficulty);
+        BotPlayer bot = new BotPlayer(botName, new Position(board.getCols() - 2, board.getRows() - 2), botDifficulty);
+        players.add(bot);
 
         this.currentPlayerIndex = 0;
         this.activeBombs = new ArrayList<>();

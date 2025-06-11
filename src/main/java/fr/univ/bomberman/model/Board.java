@@ -2,8 +2,12 @@
 package fr.univ.bomberman.model;
 
 import fr.univ.bomberman.exceptions.BombermanException;
+import fr.univ.bomberman.utils.JsonUtils;
 
+import java.io.IOException;
 import java.util.Random;
+
+import org.json.JSONObject;
 
 /**
  * Représente le plateau de jeu composé de cellules (murs indestructibles, briques destructibles, vides).
@@ -13,6 +17,7 @@ public class Board {
     private int cols;
     private int rows;
     private Cell[][] cells;
+    private String levelPath; // Chemin du fichier de niveau
 
     /**
      * Crée un plateau de dimensions spécifiées et génère aléatoirement les briques destructibles.
@@ -24,13 +29,46 @@ public class Board {
         this.cols = cols;
         this.rows = rows;
         this.cells = new Cell[rows][cols];
+        this.levelPath = "src/main/resources/fr/univ/bomberman/level/default/level.json";
         initializeBoard();
     }
 
     /**
-     * Initialise le plateau avec des murs et des cases aléatoires.
+     * Crée un plateau à partir d'un fichier de niveau spécifique.
+     *
+     * @param levelPath chemin vers le fichier de niveau
+     * @throws BombermanException si le chargement du niveau échoue
+     */
+    public Board(String levelPath) throws BombermanException {
+        this.levelPath = levelPath;
+        try {
+            JSONObject levelData = JsonUtils.readLevelFile(levelPath);
+            this.cols = levelData.getInt("width");
+            this.rows = levelData.getInt("height");
+            this.cells = new Cell[rows][cols];
+            initializeBoard();
+        } catch (IOException e) {
+            throw new BombermanException("Impossible de charger le niveau: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Initialise le plateau en chargeant le niveau depuis le fichier JSON.
      */
     private void initializeBoard() {
+        try {
+            JSONObject levelData = JsonUtils.readLevelFile(levelPath);
+            this.cells = JsonUtils.parseLevelGrid(levelData);
+        } catch (IOException e) {
+            System.err.println("Erreur lors du chargement du niveau, utilisation du niveau par défaut: " + e.getMessage());
+            initializeDefaultBoard();
+        }
+    }
+
+    /**
+     * Initialise un plateau par défaut si le chargement du niveau échoue.
+     */
+    private void initializeDefaultBoard() {
         // Exemple simple : bordures indestructibles, motifs de murs, et briques aléatoires à l'intérieur
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {

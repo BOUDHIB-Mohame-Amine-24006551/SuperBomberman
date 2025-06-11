@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 import java.util.Optional;
 
@@ -28,6 +30,7 @@ public class GameModeController {
     @FXML private Button backButton;
     @FXML private Button quitButton;
     @FXML private Button selectProfileButton;
+    @FXML private Button selectLevelButton;
     private PlayerProfile currentProfile;
     private static PlayerProfile currentGameProfile = null;
 
@@ -783,6 +786,55 @@ public class GameModeController {
             e.printStackTrace();
             showError("Erreur", "Impossible d'ouvrir la gestion des profils: " + e.getMessage());
         }
+    }
+
+    /**
+     * Gère la sélection d'un niveau via FileChooser
+     */
+    @FXML
+    private void onSelectLevel(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner un niveau");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Fichiers XML", "*.json")
+        );
+        
+        // Définir le répertoire par défaut
+        File defaultDir = new File("src/main/resources/fr/univ/bomberman/level");
+        if (defaultDir.exists()) {
+            fileChooser.setInitialDirectory(defaultDir);
+        }
+        
+        File file = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+        if (file != null) {
+            try {
+                // Convertir le chemin en chemin relatif si possible
+                String relativePath = getRelativePath(file);
+                if (bombermanApp != null) {
+                    bombermanApp.setSelectedLevelPath(relativePath);
+                    showInfo("Niveau sélectionné", "Le niveau a été sélectionné avec succès !");
+                }
+            } catch (Exception e) {
+                showError("Erreur", "Impossible de sélectionner le niveau: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Convertit un chemin absolu en chemin relatif par rapport au dossier resources
+     */
+    private String getRelativePath(File file) {
+        String absolutePath = file.getAbsolutePath();
+        String resourcesPath = "src/main/resources/fr/univ/bomberman/level";
+        
+        // Si le fichier est dans le dossier resources, retourner le chemin relatif
+        if (absolutePath.contains(resourcesPath)) {
+            int index = absolutePath.indexOf(resourcesPath);
+            return absolutePath.substring(index + resourcesPath.length() + 1);
+        }
+        
+        // Sinon, retourner le chemin absolu
+        return absolutePath;
     }
 
 }

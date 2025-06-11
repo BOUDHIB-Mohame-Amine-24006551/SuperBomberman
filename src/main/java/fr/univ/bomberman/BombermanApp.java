@@ -40,6 +40,9 @@ public class BombermanApp extends Application {
     private static final long MOVE_DELAY = 150_000_000;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private ProfileManager profileManager = ProfileManager.getInstance();
+    private PlayerProfile currentProfile; // Profil actuel sélectionné
+    private long gameStartTime; // Pour calculer la durée des parties
+    private String selectedLevelPath = "src/main/resources/fr/univ/bomberman/level/default/level.json"; // Chemin du niveau sélectionné
 
 
     @Override
@@ -105,7 +108,7 @@ public class BombermanApp extends Application {
     public void startCanvasGame() {
         try {
             // Initialiser le jeu
-            game = new Game();
+            game = new Game(selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -376,7 +379,7 @@ public class BombermanApp extends Application {
             }
 
             // Initialiser le jeu
-            game = new Game();
+            game = new Game(selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -668,7 +671,7 @@ public class BombermanApp extends Application {
                 }
             }
             // Initialiser le jeu avec 4 joueurs
-            game = new Game(playerNames);
+            game = new Game(playerNames, selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -928,7 +931,7 @@ public class BombermanApp extends Application {
                 }
             }
             // Initialiser le jeu contre un bot
-            game = new Game(playerName, botDifficulty);
+            game = new Game(playerName, botDifficulty, selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -1197,7 +1200,7 @@ public class BombermanApp extends Application {
                 }
             }
             // ✅ CORRECTION: Utiliser GameMode du package model
-            game = new Game(playerNames, GameMode.CAPTURE_THE_FLAG);
+            game = new Game(playerNames, GameMode.CAPTURE_THE_FLAG, selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -1653,9 +1656,6 @@ public class BombermanApp extends Application {
         launch(args);
     }
 
-    private PlayerProfile currentProfile; // Profil actuel sélectionné
-    private long gameStartTime; // Pour calculer la durée des parties
-
     /**
      * ✅ NOUVELLE MÉTHODE: Définit le profil actuel
      */
@@ -1739,7 +1739,20 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Définit le chemin du niveau sélectionné
+     */
+    public void setSelectedLevelPath(String path) {
+        this.selectedLevelPath = path;
+        System.out.println("🎮 Niveau sélectionné: " + path);
+    }
 
+    /**
+     * Récupère le chemin du niveau sélectionné
+     */
+    public String getSelectedLevelPath() {
+        return selectedLevelPath;
+    }
 
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
