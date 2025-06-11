@@ -33,17 +33,5 @@ public enum CellType {
                 this == FLAG_PLAYER_3 || this == FLAG_PLAYER_4;
     }
 
-    /**
-     * Obtient l'index du joueur propriétaire de ce drapeau
-     * @return l'index du joueur, ou -1 si ce n'est pas un drapeau
-     */
-    public int getFlagOwnerIndex() {
-        switch (this) {
-            case FLAG_PLAYER_1: return 0;
-            case FLAG_PLAYER_2: return 1;
-            case FLAG_PLAYER_3: return 2;
-            case FLAG_PLAYER_4: return 3;
-            default: return -1;
-        }
-    }
+
 }
