@@ -2,7 +2,6 @@ package fr.univ.bomberman;
 
 import fr.univ.bomberman.controller.GameModeController;
 import fr.univ.bomberman.controller.MenuController;
-import fr.univ.bomberman.controller.ProfileStatsController;
 import fr.univ.bomberman.model.*;
 import fr.univ.bomberman.view.GameRenderer;
 import fr.univ.bomberman.exceptions.BombermanException;
@@ -15,14 +14,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -46,7 +43,7 @@ public class BombermanApp extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
         // Démarrer avec le menu principal
@@ -102,85 +99,7 @@ public class BombermanApp extends Application {
         }
     }
 
-    /**
-     * Lance le jeu avec Canvas (version simultanée 2 joueurs)
-     */
-    public void startCanvasGame() {
-        try {
-            // Initialiser le jeu
-            game = new Game(selectedLevelPath);
 
-            // Créer le canvas
-            int canvasWidth = game.getBoard().getCols() * 40;
-            int canvasHeight = game.getBoard().getRows() * 40;
-            canvas = new Canvas(canvasWidth, canvasHeight);
-
-            // Créer le renderer
-            renderer = new GameRenderer(canvas);
-
-            game.resetAllCooldowns();
-
-            // Créer le texte de statut
-            statusText = new Text("JEU SIMULTANÉ! Joueur 1: ZQSD + ESPACE | Joueur 2: Flèches + ENTRÉE | T: Thème, ESC: Menu");
-
-            // Layout
-            VBox root = new VBox(10);
-            root.getChildren().addAll(canvas, statusText);
-
-            // Scène
-            Scene scene = new Scene(root, canvasWidth, canvasHeight + 120);
-
-            // NOUVEAU: Gestion des touches pressées et relâchées
-            scene.setOnKeyPressed(event -> {
-                pressedKeys.add(event.getCode());
-                handleKeyPress(event.getCode());
-            });
-
-            scene.setOnKeyReleased(event -> {
-                pressedKeys.remove(event.getCode());
-            });
-
-            // Configuration de la fenêtre
-            primaryStage.setTitle("Super Bomberman - Jeu Simultané");
-            primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
-            primaryStage.show();
-
-            // Demander le focus pour les événements clavier
-            canvas.requestFocus();
-
-            // Timer pour les mises à jour automatiques
-            gameTimer = new AnimationTimer() {
-                @Override
-                public void handle(long now) {
-                    // Traiter les touches pressées en continu
-                    processContinuousInput();
-
-                    // Mettre à jour le jeu toutes les secondes
-                    if (now - lastUpdateTime > UPDATE_INTERVAL) {
-                        try {
-                            game.update();
-                            lastUpdateTime = now;
-                        } catch (BombermanException e) {
-                            showError("Erreur lors de la mise à jour", e.getMessage());
-                        }
-                    }
-
-                    // Redessiner à chaque frame
-                    renderer.render(game);
-                    updateStatusText();
-                }
-            };
-            gameTimer.start();
-
-            // Rendu initial
-            renderer.render(game);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur de lancement", "Impossible de démarrer le jeu Canvas");
-        }
-    }
 
     /**
      * MODIFIÉE: Version avec limitation de vitesse pour un contrôle plus précis
@@ -262,79 +181,6 @@ public class BombermanApp extends Application {
 
         // Redessiner immédiatement
         renderer.render(game);
-    }
-
-    /**
-     * Lance le jeu avec FXML (votre version alternative)
-     */
-    public void startFXMLGame() {
-        try {
-            // Arrêter le timer du jeu s'il est actif
-            if (gameTimer != null) {
-                gameTimer.stop();
-            }
-
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fr/univ/bomberman/fxml/game/view.fxml"));
-            Parent root = loader.load();
-
-            Scene scene = new Scene(root);
-
-            // Chargement optionnel du CSS si disponible
-            try {
-                scene.getStylesheets().add(getClass().getResource("/fr/univ/bomberman/css/pokemon/default_theme.css").toExternalForm());
-            } catch (Exception cssEx) {
-                System.out.println("CSS non trouvé, utilisation du style par défaut");
-            }
-
-            primaryStage.setTitle("Super Bomberman - Jeu FXML");
-            primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
-            primaryStage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur de lancement", "Impossible de démarrer le jeu FXML");
-        }
-    }
-
-    /**
-     * MODIFIÉ: Met à jour le texte de statut pour le jeu simultané
-     */
-    private void updateStatusText() {
-        if (statusText == null) return;
-
-        if (game.isGameOver()) {
-            Player winner = game.getWinner();
-            if (winner != null) {
-                statusText.setText("🏆 " + winner.getName() + " A GAGNÉ ! Appuyez sur R pour rejouer, ESC pour le menu.");
-            } else {
-                statusText.setText("💥 ÉGALITÉ ! Tous éliminés ! Appuyez sur R pour rejouer, ESC pour le menu.");
-            }
-        } else {
-            int activeBombs = game.getActiveBombs().size();
-            int activeExplosions = game.getActiveExplosions().size();
-
-            // Afficher l'état des joueurs (vivant/éliminé)
-            java.util.List<Player> players = game.getPlayers();
-            String player1Status = "";
-            String player2Status = "";
-
-            if (players.size() > 0) {
-                Player p1 = players.get(0);
-                player1Status = p1.getName() + (p1.isEliminated() ? " ☠️" : " ❤️");
-            }
-
-            if (players.size() > 1) {
-                Player p2 = players.get(1);
-                player2Status = p2.getName() + (p2.isEliminated() ? " ☠️" : " ❤️");
-            }
-
-            statusText.setText("🎮 " + player1Status + " vs " + player2Status +
-                    " | Bombes: " + activeBombs +
-                    " | Explosions: " + activeExplosions +
-                    " | Joueur 1: ZQSD+ESPACE | Joueur 2: ↑↓←→+ENTRÉE | T: Thème");
-        }
     }
 
     public void startCanvasGameWithNames(String player1Name, String player2Name) {
@@ -486,7 +332,7 @@ public class BombermanApp extends Application {
             java.util.List<Player> players = game.getPlayers();
             StringBuilder statusBuilder = new StringBuilder();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 Player p1 = players.get(0);
                 statusBuilder.append("🔵 ").append(p1.getName());
                 if (p1.isOnBombCooldown()) {
@@ -527,7 +373,7 @@ public class BombermanApp extends Application {
 
                 // Redémarrer avec les mêmes noms
                 java.util.List<Player> currentPlayers = game.getPlayers();
-                String name1 = currentPlayers.size() > 0 ? currentPlayers.get(0).getName() : "Joueur 1";
+                String name1 = !currentPlayers.isEmpty() ? currentPlayers.get(0).getName() : "Joueur 1";
                 String name2 = currentPlayers.size() > 1 ? currentPlayers.get(1).getName() : "Joueur 2";
                 startCanvasGameWithNames(name1, name2);
                 return;
@@ -577,7 +423,7 @@ public class BombermanApp extends Application {
                 recordGameSessionWithDuration();
 
                 java.util.List<Player> currentPlayers = game.getPlayers();
-                String name1 = currentPlayers.size() > 0 ? currentPlayers.get(0).getName() : "Joueur 1";
+                String name1 = !currentPlayers.isEmpty() ? currentPlayers.get(0).getName() : "Joueur 1";
                 String name2 = currentPlayers.size() > 1 ? currentPlayers.get(1).getName() : "Joueur 2";
                 startCanvasGameWithNames(name1, name2);
                 break;
@@ -608,28 +454,6 @@ public class BombermanApp extends Application {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    /**
-     * Affiche une boîte de dialogue de confirmation
-     * @return true si l'utilisateur a cliqué sur OK
-     */
-    private boolean showConfirmation(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.OK;
     }
 
     private void showCooldownFeedback(int playerIndex) {
@@ -1562,77 +1386,9 @@ public class BombermanApp extends Application {
                 "\n💀 Joueurs éliminés peuvent encore bombarder | R:Restart T:Thème");
     }
 
-    //profil
-    private void recordGameSession() {
-        if (game == null || game.getPlayers().isEmpty()) return;
 
-        try {
-            // Enregistrer pour chaque joueur
-            for (Player player : game.getPlayers()) {
-                if (!(player instanceof BotPlayer)) { // Seulement les joueurs humains
-                    profileManager.recordGameSession(player.getName(), game);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l'enregistrement des sessions: " + e.getMessage());
-        }
-    }
 
-    private void loadPlayerPreferences(String playerName) {
-        try {
-            PlayerProfile profile = profileManager.loadProfile(playerName);
 
-            // Appliquer le thème préféré
-            if (renderer != null && profile.getPreferredTheme() != null) {
-                renderer.changeTheme(profile.getPreferredTheme());
-            }
-
-            // Autres préférences peuvent être appliquées ici
-            // (son, difficulté bot par défaut, etc.)
-
-        } catch (Exception e) {
-            System.err.println("Impossible de charger les préférences: " + e.getMessage());
-        }
-    }
-    private void recordDetailedGameSession(long gameStartTime) {
-        if (game == null || game.getPlayers().isEmpty()) return;
-
-        try {
-            for (Player player : game.getPlayers()) {
-                if (!(player instanceof BotPlayer)) {
-                    // Créer une session détaillée
-                    GameSession session = new GameSession();
-                    session.setStartTime(java.time.LocalDateTime.now().minusSeconds(
-                            (System.currentTimeMillis() - gameStartTime) / 1000));
-                    session.setGameMode(game.getGameMode());
-                    session.setPlayersCount(game.getPlayerCount());
-                    session.setBotGame(game.hasBots());
-
-                    if (game.hasBots()) {
-                        BotPlayer bot = game.getBot();
-                        session.setBotDifficulty(bot != null ? bot.getDifficulty() : 2);
-                    }
-
-                    // Déterminer le résultat
-                    Player winner = game.getWinner();
-                    session.setWon(winner != null && winner.equals(player));
-                    session.setWinnerName(winner != null ? winner.getName() : "Égalité");
-
-                    // Statistiques estimées (pourraient être améliorées avec un tracking en temps réel)
-                    session.setBombsPlaced(estimateBombsForPlayer(player));
-                    session.setEliminationsDealt(estimateEliminationsForPlayer(player));
-                    session.setDeaths(player.isEliminated() ? 1 : 0);
-
-                    session.finalize();
-
-                    // Enregistrer
-                    profileManager.recordCustomGameSession(player.getName(), session);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l'enregistrement détaillé: " + e.getMessage());
-        }
-    }
 
     private int estimateBombsForPlayer(Player player) {
         // Logique d'estimation basée sur la durée de jeu et l'activité
@@ -1654,32 +1410,6 @@ public class BombermanApp extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    /**
-     * ✅ NOUVELLE MÉTHODE: Définit le profil actuel
-     */
-    public void setCurrentProfile(PlayerProfile profile) {
-        this.currentProfile = profile;
-
-        // Appliquer les préférences du profil
-        if (profile != null) {
-            loadPlayerPreferences(profile.getPlayerName());
-        }
-    }
-
-    public PlayerProfile getCurrentProfile() {
-        return currentProfile;
-    }
-
-    public void startCanvasGameWithProfile() {
-        if (currentProfile != null) {
-            // Utiliser le profil pour le joueur 1
-            startCanvasGameWithNames(currentProfile.getPlayerName(), "Adversaire");
-        } else {
-            // Fallback vers la méthode normale
-            startCanvasGame();
-        }
     }
 
     private void recordGameSessionWithDuration() {
@@ -1745,21 +1475,6 @@ public class BombermanApp extends Application {
     public void setSelectedLevelPath(String path) {
         this.selectedLevelPath = path;
         System.out.println("🎮 Niveau sélectionné: " + path);
-    }
-
-    /**
-     * Récupère le chemin du niveau sélectionné
-     */
-    public String getSelectedLevelPath() {
-        return selectedLevelPath;
-    }
-
-    private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
 
