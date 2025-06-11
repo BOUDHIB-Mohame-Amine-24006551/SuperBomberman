@@ -26,19 +26,7 @@ public class Bomb {
         this.exploded = false;
     }
 
-    /**
-     * Constructeur alternatif avec coordonnées séparées
-     * @param x coordonnée X
-     * @param y coordonnée Y
-     * @param owner propriétaire de la bombe
-     */
-    public Bomb(int x, int y, Player owner) {
-        this.position = new Position(x, y);
-        this.owner = owner;
-        this.board = null; // Sera défini plus tard si nécessaire
-        this.timer = 3; // explose après 3 mises à jour
-        this.exploded = false;
-    }
+
 
     /**
      * Définit le plateau de jeu pour cette bombe
