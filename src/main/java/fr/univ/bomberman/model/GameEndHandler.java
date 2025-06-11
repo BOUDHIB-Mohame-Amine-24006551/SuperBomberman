@@ -2,8 +2,7 @@
 package fr.univ.bomberman.model;
 
 import fr.univ.bomberman.controller.GameModeController;
-import fr.univ.bomberman.model.*;
-import fr.univ.bomberman.exceptions.BombermanException;
+
 import fr.univ.bomberman.utils.ProfileManager;
 
 import java.time.LocalDateTime;
@@ -160,7 +159,7 @@ public class GameEndHandler {
         System.out.println("💣 Bombes posées: " + session.getBombsPlaced());
         System.out.println("🎯 Éliminations: " + session.getEliminationsDealt());
         System.out.println("💀 Morts: " + session.getDeaths());
-        System.out.println("");
+        System.out.println(" ");
         System.out.println("📊 === NOUVELLES STATISTIQUES ===");
         System.out.println("🎮 Total parties: " + profile.getTotalGamesPlayed());
         System.out.println("🏆 Victoires: " + profile.getTotalWins());
@@ -176,42 +175,5 @@ public class GameEndHandler {
         System.out.println("===============================");
     }
 
-    /**
-     * Méthode simple pour les parties rapides (sans Game object)
-     */
-    public static void handleSimpleGameEnd(String playerName, GameResult result, GameMode gameMode, long durationSeconds) {
-        try {
-            PlayerProfile currentProfile = GameModeController.getCurrentGameProfile();
 
-            if (currentProfile == null || !currentProfile.getPlayerName().equals(playerName)) {
-                return;
-            }
-
-            // Mise à jour simple
-            currentProfile.setTotalGamesPlayed(currentProfile.getTotalGamesPlayed() + 1);
-
-            if (result.isWin()) {
-                currentProfile.setTotalWins(currentProfile.getTotalWins() + 1);
-            } else if (result.isLoss()) {
-                currentProfile.setTotalLosses(currentProfile.getTotalLosses() + 1);
-            }
-
-            // Ajout approximatif du temps
-            currentProfile.setTotalPlayTimeSeconds(currentProfile.getTotalPlayTimeSeconds() + durationSeconds);
-
-            // Mettre à jour la date
-            currentProfile.setLastPlayDate(LocalDateTime.now());
-
-            // Mettre à jour le rang
-            currentProfile.updateRank();
-
-            // Sauvegarder
-            ProfileManager.getInstance().saveProfile(currentProfile);
-
-            System.out.println("✅ Statistiques mises à jour (mode simple) pour " + playerName);
-
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la mise à jour simple: " + e.getMessage());
-        }
-    }
 }
