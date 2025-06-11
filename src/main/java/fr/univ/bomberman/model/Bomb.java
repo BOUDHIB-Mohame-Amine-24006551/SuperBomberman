@@ -28,13 +28,6 @@ public class Bomb {
 
 
 
-    /**
-     * Définit le plateau de jeu pour cette bombe
-     * @param board plateau de jeu
-     */
-    public void setBoard(Board board) {
-        this.board = board;
-    }
 
     /**
      * Retourne la coordonnée X de la bombe
@@ -59,12 +52,6 @@ public class Bomb {
         return position;
     }
 
-    /**
-     * @return le propriétaire de la bombe
-     */
-    public Player getOwner() {
-        return owner;
-    }
 
     /**
      * Décrémente le timer de la bombe et marque comme explosée si timer atteint 0.
