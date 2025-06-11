@@ -35,7 +35,7 @@ public class GameModeController {
     private BombermanApp bombermanApp;
     private String player1Name = "Joueur 1";
     private String player2Name = "Joueur 2";
-    private String selectedLevel = "bomber/src/main/resources/fr/univ/bomberman/level/default/level.json";
+    private String selectedLevel = "src/main/resources/fr/univ/bomberman/level/default/level.json";
 
     /**
      * Initialisation du contrôleur
@@ -503,7 +503,7 @@ public class GameModeController {
             fileChooser.setTitle("Sélectionner un niveau");
             
             // Définir le répertoire initial
-            File initialDir = new File("bomber/src/main/resources/fr/univ/bomberman/level");
+            File initialDir = new File("src/main/resources/fr/univ/bomberman/level");
             fileChooser.setInitialDirectory(initialDir);
             
             // Filtrer pour ne montrer que les fichiers JSON
@@ -518,6 +518,10 @@ public class GameModeController {
                 selectedLevel = selectedFile.getAbsolutePath();
                 System.out.println("Niveau sélectionné: " + selectedLevel);
                 
+                // Mettre à jour le chemin dans BombermanApp
+                if (bombermanApp != null) {
+                    bombermanApp.setSelectedLevelPath(selectedLevel);
+                }
                 
                 // Afficher une confirmation
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);

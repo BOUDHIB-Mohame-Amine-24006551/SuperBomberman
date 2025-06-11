@@ -43,6 +43,7 @@ public class BombermanApp extends Application {
     private static final long MOVE_DELAY = 150_000_000;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private ScoreboardRenderer scoreboardRenderer;
+    private String selectedLevelPath = "src/main/resources/fr/univ/bomberman/level/default/level.json"; // Chemin par défaut
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -363,6 +364,7 @@ public class BombermanApp extends Application {
         try {
             // Initialiser le jeu avec des noms personnalisés
             game = new Game();
+            game.setLevel(selectedLevelPath);
 
             // Modifier les noms des joueurs
             java.util.List<Player> players = game.getPlayers();
@@ -624,6 +626,7 @@ public class BombermanApp extends Application {
         try {
             // Initialiser le jeu avec 4 joueurs
             game = new Game(playerNames);
+            game.setLevel(selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -957,6 +960,7 @@ public class BombermanApp extends Application {
         try {
             // Initialiser le jeu contre un bot
             game = new Game(playerName, botDifficulty);
+            game.setLevel(selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -1221,6 +1225,14 @@ public class BombermanApp extends Application {
 
     public Stage getPrimaryStage() {
         return primaryStage;
+    }
+
+    public void setSelectedLevelPath(String path) {
+        this.selectedLevelPath = path;
+    }
+
+    public String getSelectedLevelPath() {
+        return selectedLevelPath;
     }
 
     public static void main(String[] args) {

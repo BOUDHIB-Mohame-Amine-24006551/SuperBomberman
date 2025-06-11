@@ -23,7 +23,7 @@ public class Game {
     private boolean gameOver;
     private GameMode gameMode;
     private boolean statsUpdated = false; // Indique si les statistiques ont déjà été mises à jour
-    private static final String DEFAULT_LEVEL = "bomber/src/main/resources/fr/univ/bomberman/level/default/level.json";
+    private static final String DEFAULT_LEVEL = "src/main/resources/fr/univ/bomberman/level/default/level.json";
     private String currentLevel;
     
     /**
