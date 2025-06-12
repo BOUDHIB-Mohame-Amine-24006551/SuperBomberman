@@ -2,7 +2,6 @@
 
         <?import javafx.geometry.Insets?>
         <?import javafx.scene.control.Label?>
-        <?import javafx.scene.input.KeyEvent?>
         <?import javafx.scene.layout.BorderPane?>
         <?import javafx.scene.layout.GridPane?>
         <?import javafx.scene.layout.VBox?>
@@ -30,10 +29,10 @@
             </padding>
             <Label fx:id="currentPlayerLabel"
                    text="Joueur actuel :"
-                   styleClass="hud-label"/>
+                   />
             <Label fx:id="bombsRemainingLabel"
                    text="Bombes restantes :"
-                   styleClass="hud-label"/>
+                   />
         </VBox>
     </right>
 </BorderPane>
