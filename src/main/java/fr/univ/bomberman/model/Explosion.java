@@ -19,17 +19,6 @@ public class Explosion {
     private long creationTime;
     private static final long EXPLOSION_DURATION_MS = 1500;
 
-    /**
-     * Crée une explosion centrée sur une position et détruit les briques directement adjacentes.
-     * MODIFIÉ: Les explosions s'arrêtent aux murs indestructibles
-     *
-     * @param center position de la bombe
-     * @param board  plateau de jeu
-     * @throws BombermanException si modification du plateau échoue
-     */
-    public Explosion(Position center, Board board) throws BombermanException {
-        this(center, board, null);
-    }
 
     /**
      * CONSTRUCTEUR MODIFIÉ: Crée une explosion avec référence au propriétaire
@@ -65,17 +54,7 @@ public class Explosion {
         long elapsed = System.currentTimeMillis() - creationTime;
         return elapsed <= EXPLOSION_DURATION_MS;
     }
-    /**
-     * ✅ NOUVELLE MÉTHODE: Retourne le temps restant où l'explosion est mortelle (en ms)
-     */
 
-
-
-    public long getRemainingTime() {
-        long elapsed = System.currentTimeMillis() - creationTime;
-        long remaining = EXPLOSION_DURATION_MS - elapsed;
-        return Math.max(0, remaining);
-    }
 
     /**
      * NOUVELLE MÉTHODE: Étend l'explosion dans une direction donnée
@@ -123,7 +102,7 @@ public class Explosion {
      * @param pos position à ajouter
      * @param board plateau de jeu
      */
-    private void addExplosionPosition(Position pos, Board board) throws BombermanException {
+    private void addExplosionPosition(Position pos, Board board) {
         if (board.isWithinBounds(pos)) {
             affectedPositions.add(pos);
         }
@@ -143,9 +122,7 @@ public class Explosion {
         return bombOwner;
     }
 
-    /**
-     * Décrémente la durée de l'explosion.
-     */
+
 
     /**
      * MÉTHODE MODIFIÉE: L'explosion reste visible plus longtemps mais n'est mortelle que 2.5s
@@ -165,27 +142,7 @@ public class Explosion {
         return affectedPositions.contains(pos);
     }
 
-    /**
-     * MÉTHODE MODIFIÉE: Vérifie si cette explosion devrait affecter un joueur
-     * Maintenant basé sur le temps mortel de 2.5s
-     *
-     * @param player joueur à tester
-     * @return true si le joueur devrait être affecté
-     */
-    public boolean shouldAffectPlayer(Player player) {
-        if (!affectsPosition(player.getPosition())) {
-            return false;
-        }
 
-        // L'explosion est mortelle pendant toute sa durée de vie
-        return !isFinished();
-    }
 
-    /**
-     * NOUVELLE MÉTHODE: Vérifie si le joueur est le propriétaire de la bombe
-     * (utile pour les messages informatifs)
-     */
-    public boolean isOwner(Player player) {
-        return bombOwner != null && bombOwner.equals(player);
-    }
+
 }

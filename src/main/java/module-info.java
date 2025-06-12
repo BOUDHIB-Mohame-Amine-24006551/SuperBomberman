@@ -4,6 +4,8 @@ module fr.univ.bomberman {
     requires javafx.graphics;
     requires javafx.base;
     requires java.desktop;
+    requires org.json;
+    requires java.logging;
 
     // Exporter les packages vers JavaFX pour permettre l'accès aux contrôleurs
     exports fr.univ.bomberman.controller to javafx.fxml;
@@ -16,4 +18,6 @@ module fr.univ.bomberman {
     // Ouvrir les packages pour la réflexion (alternative plus permissive)
     opens fr.univ.bomberman.controller to javafx.fxml;
     opens fr.univ.bomberman to javafx.fxml;
+    opens fr.univ.bomberman.model to javafx.base;
+    opens fr.univ.bomberman.tools to javafx.graphics;
 }

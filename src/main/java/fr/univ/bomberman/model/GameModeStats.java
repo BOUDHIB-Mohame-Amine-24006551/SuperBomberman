@@ -1,7 +1,7 @@
 package fr.univ.bomberman.model;
 
 /**
- * Statistiques pour un mode de jeu spécifique
+ * Cette classe permet de suivre les performances d'un joueur dans un mode particulier.
  */
 public class GameModeStats {
     private int gamesPlayed;
@@ -78,68 +78,12 @@ public class GameModeStats {
         this.wins = wins;
     }
 
-    public int getLosses() {
-        return losses;
-    }
-
-    public void setLosses(int losses) {
-        this.losses = losses;
-    }
-
-    public int getBombsPlaced() {
-        return bombsPlaced;
-    }
-
-    public void setBombsPlaced(int bombsPlaced) {
-        this.bombsPlaced = bombsPlaced;
-    }
-
-    public int getEliminationsDealt() {
-        return eliminationsDealt;
-    }
-
-    public void setEliminationsDealt(int eliminationsDealt) {
-        this.eliminationsDealt = eliminationsDealt;
-    }
-
-    public int getDeaths() {
-        return deaths;
-    }
-
-    public void setDeaths(int deaths) {
-        this.deaths = deaths;
-    }
-
     public long getTotalPlayTimeSeconds() {
         return totalPlayTimeSeconds;
     }
 
     public void setTotalPlayTimeSeconds(long totalPlayTimeSeconds) {
         this.totalPlayTimeSeconds = totalPlayTimeSeconds;
-    }
-
-    public int getBestStreak() {
-        return bestStreak;
-    }
-
-    public void setBestStreak(int bestStreak) {
-        this.bestStreak = bestStreak;
-    }
-
-    public int getCurrentStreak() {
-        return currentStreak;
-    }
-
-    public void setCurrentStreak(int currentStreak) {
-        this.currentStreak = currentStreak;
-    }
-
-    public int getFlagsCaptured() {
-        return flagsCaptured;
-    }
-
-    public void setFlagsCaptured(int flagsCaptured) {
-        this.flagsCaptured = flagsCaptured;
     }
 
     public int getBotWins() {
@@ -150,12 +94,17 @@ public class GameModeStats {
         this.botWins = botWins;
     }
 
-    public int[] getBotWinsByDifficulty() {
-        return botWinsByDifficulty;
-    }
-
-    public void setBotWinsByDifficulty(int[] botWinsByDifficulty) {
-        this.botWinsByDifficulty = botWinsByDifficulty;
+    /**
+     * Ajoute une partie aux statistiques et met à jour le nombre de victoires/défaites.
+     * @param won true si la partie a été gagnée, false sinon
+     */
+    public void addGame(boolean won) {
+        gamesPlayed++;
+        if (won) {
+            wins++;
+        } else {
+            losses++;
+        }
     }
 
     public void addGame(boolean won) {

@@ -27,28 +27,6 @@ public class Bomb {
     }
 
     /**
-     * Constructeur alternatif avec coordonnées séparées
-     * @param x coordonnée X
-     * @param y coordonnée Y
-     * @param owner propriétaire de la bombe
-     */
-    public Bomb(int x, int y, Player owner) {
-        this.position = new Position(x, y);
-        this.owner = owner;
-        this.board = null; // Sera défini plus tard si nécessaire
-        this.timer = 3; // explose après 3 mises à jour
-        this.exploded = false;
-    }
-
-    /**
-     * Définit le plateau de jeu pour cette bombe
-     * @param board plateau de jeu
-     */
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    /**
      * Retourne la coordonnée X de la bombe
      * @return position X
      */
@@ -65,17 +43,11 @@ public class Bomb {
     }
 
     /**
+     * Retourne la position complète de la bombe
      * @return la position de la bombe
      */
     public Position getPosition() {
         return position;
-    }
-
-    /**
-     * @return le propriétaire de la bombe
-     */
-    public Player getOwner() {
-        return owner;
     }
 
     /**
@@ -98,6 +70,7 @@ public class Bomb {
     }
 
     /**
+     * Retourne le temps restant avant l'explosion
      * @return le temps restant avant explosion
      */
     public int getTimer() {

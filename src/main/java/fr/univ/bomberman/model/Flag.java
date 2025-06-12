@@ -73,19 +73,9 @@ public class Flag {
         return carrier != null;
     }
 
-    /**
-     * @return true si le drapeau a été capturé (n'est plus à sa position d'origine)
-     */
-    public boolean isCaptured() {
-        return captured;
-    }
 
-    /**
-     * @return true si le drapeau est à sa position d'origine
-     */
-    public boolean isAtHome() {
-        return currentPosition.equals(homePosition) && !isBeingCarried();
-    }
+
+
 
     /**
      * Remet le drapeau à sa position d'origine

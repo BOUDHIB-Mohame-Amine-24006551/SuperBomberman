@@ -1,11 +1,11 @@
 package fr.univ.bomberman;
 
+import fr.univ.bomberman.controller.GameModeController;
 import fr.univ.bomberman.controller.MenuController;
-import fr.univ.bomberman.controller.ProfileStatsController;
 import fr.univ.bomberman.model.*;
 import fr.univ.bomberman.view.GameRenderer;
 import fr.univ.bomberman.exceptions.BombermanException;
-import fr.univ.bomberman.util.ProfileManager;
+import fr.univ.bomberman.utils.ProfileManager;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -14,17 +14,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
-
+/**
+ * Classe principale de l'application Super Bomberman.
+ * Cette classe gère l'interface graphique JavaFX et coordonne les différents modes de jeu.
+ * Elle implémente la logique de contrôle des joueurs, la gestion des événements clavier,
+ * et l'affichage du jeu en temps réel.
+ */
 public class BombermanApp extends Application {
 
     private Stage primaryStage;
@@ -39,10 +42,17 @@ public class BombermanApp extends Application {
     private static final long MOVE_DELAY = 150_000_000;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private ProfileManager profileManager = ProfileManager.getInstance();
+    private PlayerProfile currentProfile; // Profil actuel sélectionné
+    private long gameStartTime; // Pour calculer la durée des parties
+    private String selectedLevelPath = "src/main/resources/fr/univ/bomberman/level/default/level.json"; // Chemin du niveau sélectionné
 
-
+    /**
+     * Point d'entrée principal de l'application JavaFX.
+     * Initialise la fenêtre principale et affiche le menu de démarrage.
+     * @param primaryStage la fenêtre principale de l'application
+     */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
         // Démarrer avec le menu principal
@@ -50,7 +60,8 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Affiche le menu principal FXML
+     * Affiche le menu principal de l'application.
+     * Charge l'interface FXML et configure les styles CSS.
      */
     public void showMenu() {
         try {
@@ -99,87 +110,8 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Lance le jeu avec Canvas (version simultanée 2 joueurs)
-     */
-    public void startCanvasGame() {
-        try {
-            // Initialiser le jeu
-            game = new Game();
-
-            // Créer le canvas
-            int canvasWidth = game.getBoard().getCols() * 40;
-            int canvasHeight = game.getBoard().getRows() * 40;
-            canvas = new Canvas(canvasWidth, canvasHeight);
-
-            // Créer le renderer
-            renderer = new GameRenderer(canvas);
-
-            game.resetAllCooldowns();
-
-            // Créer le texte de statut
-            statusText = new Text("JEU SIMULTANÉ! Joueur 1: ZQSD + ESPACE | Joueur 2: Flèches + ENTRÉE | T: Thème, ESC: Menu");
-
-            // Layout
-            VBox root = new VBox(10);
-            root.getChildren().addAll(canvas, statusText);
-
-            // Scène
-            Scene scene = new Scene(root, canvasWidth, canvasHeight + 120);
-
-            // NOUVEAU: Gestion des touches pressées et relâchées
-            scene.setOnKeyPressed(event -> {
-                pressedKeys.add(event.getCode());
-                handleKeyPress(event.getCode());
-            });
-
-            scene.setOnKeyReleased(event -> {
-                pressedKeys.remove(event.getCode());
-            });
-
-            // Configuration de la fenêtre
-            primaryStage.setTitle("Super Bomberman - Jeu Simultané");
-            primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
-            primaryStage.show();
-
-            // Demander le focus pour les événements clavier
-            canvas.requestFocus();
-
-            // Timer pour les mises à jour automatiques
-            gameTimer = new AnimationTimer() {
-                @Override
-                public void handle(long now) {
-                    // Traiter les touches pressées en continu
-                    processContinuousInput();
-
-                    // Mettre à jour le jeu toutes les secondes
-                    if (now - lastUpdateTime > UPDATE_INTERVAL) {
-                        try {
-                            game.update();
-                            lastUpdateTime = now;
-                        } catch (BombermanException e) {
-                            showError("Erreur lors de la mise à jour", e.getMessage());
-                        }
-                    }
-
-                    // Redessiner à chaque frame
-                    renderer.render(game);
-                    updateStatusText();
-                }
-            };
-            gameTimer.start();
-
-            // Rendu initial
-            renderer.render(game);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur de lancement", "Impossible de démarrer le jeu Canvas");
-        }
-    }
-
-    /**
-     * MODIFIÉE: Version avec limitation de vitesse pour un contrôle plus précis
+     * Traite les entrées continues du clavier pour le mouvement des joueurs.
+     * Gère les déplacements avec un délai entre chaque mouvement.
      */
     private void processContinuousInput() {
         if (game.isGameOver()) return;
@@ -234,7 +166,10 @@ public class BombermanApp extends Application {
         }
     }
 
-
+    /**
+     * Change le thème visuel du jeu.
+     * Alterne entre les thèmes disponibles.
+     */
     private void changeTheme() {
         if (renderer == null) return;
 
@@ -261,82 +196,31 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Lance le jeu avec FXML (votre version alternative)
+     * Démarre une partie à deux joueurs avec des noms personnalisés.
+     * @param player1Name nom du premier joueur
+     * @param player2Name nom du deuxième joueur
      */
-    public void startFXMLGame() {
-        try {
-            // Arrêter le timer du jeu s'il est actif
-            if (gameTimer != null) {
-                gameTimer.stop();
-            }
-
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fr/univ/bomberman/fxml/game/view.fxml"));
-            Parent root = loader.load();
-
-            Scene scene = new Scene(root);
-
-            // Chargement optionnel du CSS si disponible
-            try {
-                scene.getStylesheets().add(getClass().getResource("/fr/univ/bomberman/css/pokemon/default_theme.css").toExternalForm());
-            } catch (Exception cssEx) {
-                System.out.println("CSS non trouvé, utilisation du style par défaut");
-            }
-
-            primaryStage.setTitle("Super Bomberman - Jeu FXML");
-            primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
-            primaryStage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur de lancement", "Impossible de démarrer le jeu FXML");
-        }
-    }
-
-    /**
-     * MODIFIÉ: Met à jour le texte de statut pour le jeu simultané
-     */
-    private void updateStatusText() {
-        if (statusText == null) return;
-
-        if (game.isGameOver()) {
-            Player winner = game.getWinner();
-            if (winner != null) {
-                statusText.setText("🏆 " + winner.getName() + " A GAGNÉ ! Appuyez sur R pour rejouer, ESC pour le menu.");
-            } else {
-                statusText.setText("💥 ÉGALITÉ ! Tous éliminés ! Appuyez sur R pour rejouer, ESC pour le menu.");
-            }
-        } else {
-            int activeBombs = game.getActiveBombs().size();
-            int activeExplosions = game.getActiveExplosions().size();
-
-            // Afficher l'état des joueurs (vivant/éliminé)
-            java.util.List<Player> players = game.getPlayers();
-            String player1Status = "";
-            String player2Status = "";
-
-            if (players.size() > 0) {
-                Player p1 = players.get(0);
-                player1Status = p1.getName() + (p1.isEliminated() ? " ☠️" : " ❤️");
-            }
-
-            if (players.size() > 1) {
-                Player p2 = players.get(1);
-                player2Status = p2.getName() + (p2.isEliminated() ? " ☠️" : " ❤️");
-            }
-
-            statusText.setText("🎮 " + player1Status + " vs " + player2Status +
-                    " | Bombes: " + activeBombs +
-                    " | Explosions: " + activeExplosions +
-                    " | Joueur 1: ZQSD+ESPACE | Joueur 2: ↑↓←→+ENTRÉE | T: Thème");
-        }
-    }
-
     public void startCanvasGameWithNames(String player1Name, String player2Name) {
         gameStartTime = System.currentTimeMillis(); // Enregistrer le début
 
         try {
+            PlayerProfile currentProfile = GameModeController.getCurrentGameProfile();
+            if (currentProfile != null && !currentProfile.getPlayerName().equals(player1Name)) {
+                System.out.println("⚠️ Profil actuel: " + currentProfile.getPlayerName() + ", Joueur 1: " + player1Name);
+            }
+
+            // Si aucun profil n'est sélectionné mais on a un nom, essayer de charger/créer le profil
+            if (currentProfile == null && player1Name != null && !player1Name.trim().isEmpty()) {
+                try {
+                    ProfileManager profileManager = ProfileManager.getInstance();
+                    PlayerProfile profile = profileManager.loadProfile(player1Name);
+                    GameModeController.setCurrentGameProfile(profile);
+                    System.out.println("🎮 Profil automatiquement chargé pour: " + player1Name);
+                } catch (Exception e) {
+                    System.out.println("⚠️ Impossible de charger le profil pour " + player1Name);
+                }
+            }
+
             PlayerProfile profile1 = null;
 
             // Charger le profil si disponible
@@ -344,6 +228,7 @@ public class BombermanApp extends Application {
                 profile1 = currentProfile;
             } else {
                 try {
+                    ProfileManager profileManager = ProfileManager.getInstance(); // Add this line
                     profile1 = profileManager.loadProfile(player1Name);
                 } catch (BombermanException e) {
                     // Profil non trouvé, continuer sans profil
@@ -357,7 +242,7 @@ public class BombermanApp extends Application {
             }
 
             // Initialiser le jeu
-            game = new Game();
+            game = new Game(selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -445,7 +330,9 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * NOUVELLE MÉTHODE: Met à jour le texte de statut avec les noms personnalisés
+     * Met à jour le texte de statut avec les noms des joueurs et l'état du jeu.
+     * @param player1Name nom du premier joueur
+     * @param player2Name nom du deuxième joueur
      */
     private void updateStatusTextWithNames(String player1Name, String player2Name) {
         if (statusText == null) return;
@@ -465,7 +352,7 @@ public class BombermanApp extends Application {
             java.util.List<Player> players = game.getPlayers();
             StringBuilder statusBuilder = new StringBuilder();
 
-            if (players.size() > 0) {
+            if (!players.isEmpty()) {
                 Player p1 = players.get(0);
                 statusBuilder.append("🔵 ").append(p1.getName());
                 if (p1.isOnBombCooldown()) {
@@ -496,7 +383,8 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * MÉTHODE COMPLÈTE ET CORRIGÉE: Gestion des touches avec support des noms personnalisés
+     * Gère les événements de touche pressée pendant le jeu.
+     * @param keyCode le code de la touche pressée
      */
     private void handleKeyPress(KeyCode keyCode) {
         if (game.isGameOver()) {
@@ -506,7 +394,7 @@ public class BombermanApp extends Application {
 
                 // Redémarrer avec les mêmes noms
                 java.util.List<Player> currentPlayers = game.getPlayers();
-                String name1 = currentPlayers.size() > 0 ? currentPlayers.get(0).getName() : "Joueur 1";
+                String name1 = !currentPlayers.isEmpty() ? currentPlayers.get(0).getName() : "Joueur 1";
                 String name2 = currentPlayers.size() > 1 ? currentPlayers.get(1).getName() : "Joueur 2";
                 startCanvasGameWithNames(name1, name2);
                 return;
@@ -556,7 +444,7 @@ public class BombermanApp extends Application {
                 recordGameSessionWithDuration();
 
                 java.util.List<Player> currentPlayers = game.getPlayers();
-                String name1 = currentPlayers.size() > 0 ? currentPlayers.get(0).getName() : "Joueur 1";
+                String name1 = !currentPlayers.isEmpty() ? currentPlayers.get(0).getName() : "Joueur 1";
                 String name2 = currentPlayers.size() > 1 ? currentPlayers.get(1).getName() : "Joueur 2";
                 startCanvasGameWithNames(name1, name2);
                 break;
@@ -579,7 +467,9 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Affiche une boîte de dialogue d'erreur
+     * Affiche une boîte de dialogue d'erreur.
+     * @param title titre de la boîte de dialogue
+     * @param message message d'erreur à afficher
      */
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -589,28 +479,10 @@ public class BombermanApp extends Application {
         alert.showAndWait();
     }
 
-    private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     /**
-     * Affiche une boîte de dialogue de confirmation
-     * @return true si l'utilisateur a cliqué sur OK
+     * Affiche un retour visuel pour le cooldown des bombes.
+     * @param playerIndex index du joueur concerné
      */
-    private boolean showConfirmation(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.OK;
-    }
-
     private void showCooldownFeedback(int playerIndex) {
         if (game == null || playerIndex >= game.getPlayers().size()) return;
 
@@ -632,10 +504,29 @@ public class BombermanApp extends Application {
         timeline.play();
     }
 
+    /**
+     * Démarre une partie à quatre joueurs.
+     * @param playerNames tableau contenant les noms des quatre joueurs
+     */
     public void startFourPlayerGame(String[] playerNames) {
         try {
+            if (playerNames.length > 0) {
+                String firstPlayerName = playerNames[0];
+
+                PlayerProfile currentProfile = GameModeController.getCurrentGameProfile();
+                if (currentProfile == null || !currentProfile.getPlayerName().equals(firstPlayerName)) {
+                    try {
+                        ProfileManager profileManager = ProfileManager.getInstance();
+                        PlayerProfile profile = profileManager.loadProfile(firstPlayerName);
+                        GameModeController.setCurrentGameProfile(profile);
+                        System.out.println("🎮 Profil défini pour la bataille royale: " + firstPlayerName);
+                    } catch (Exception e) {
+                        System.out.println("⚠️ Impossible de charger le profil pour " + firstPlayerName);
+                    }
+                }
+            }
             // Initialiser le jeu avec 4 joueurs
-            game = new Game(playerNames);
+            game = new Game(playerNames, selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -705,6 +596,10 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Gère les événements de touche pressée pour le mode 4 joueurs.
+     * @param keyCode le code de la touche pressée
+     */
     private void handleKeyPressFourPlayers(KeyCode keyCode) {
         if (game.isGameOver()) {
             if (keyCode == KeyCode.R) {
@@ -838,6 +733,9 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Met à jour le texte de statut pour le mode 4 joueurs.
+     */
     private void updateStatusTextFourPlayers() {
         if (statusText == null) return;
 
@@ -881,10 +779,26 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Démarre une partie contre un bot.
+     * @param playerName nom du joueur humain
+     * @param botDifficulty niveau de difficulté du bot (1-3)
+     */
     public void startBotGame(String playerName, int botDifficulty) {
         try {
+            PlayerProfile currentProfile = GameModeController.getCurrentGameProfile();
+            if (currentProfile == null || !currentProfile.getPlayerName().equals(playerName)) {
+                try {
+                    ProfileManager profileManager = ProfileManager.getInstance();
+                    PlayerProfile profile = profileManager.loadProfile(playerName);
+                    GameModeController.setCurrentGameProfile(profile);
+                    System.out.println("🎮 Profil défini pour le jeu bot: " + playerName);
+                } catch (Exception e) {
+                    System.out.println("⚠️ Impossible de charger le profil pour " + playerName);
+                }
+            }
             // Initialiser le jeu contre un bot
-            game = new Game(playerName, botDifficulty);
+            game = new Game(playerName, botDifficulty, selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -968,6 +882,10 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Gère les événements de touche pressée pour le mode bot.
+     * @param keyCode le code de la touche pressée
+     */
     private void handleKeyPressBotMode(KeyCode keyCode) {
         if (game.isGameOver()) {
             if (keyCode == KeyCode.R) {
@@ -1026,6 +944,9 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Traite les entrées continues du clavier pour le mode bot.
+     */
     private void processContinuousInputBotMode() {
         if (game.isGameOver()) return;
 
@@ -1061,6 +982,9 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Met à jour le texte de statut pour le mode bot.
+     */
     private void updateStatusTextBotMode() {
         if (statusText == null) return;
 
@@ -1112,6 +1036,11 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Retourne le texte descriptif de la difficulté du bot.
+     * @param difficulty niveau de difficulté du bot
+     * @return une chaîne de caractères décrivant la difficulté
+     */
     private String getBotDifficultyText(int difficulty) {
         switch (difficulty) {
             case 1: return "Facile 😊";
@@ -1121,6 +1050,9 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Redémarre une partie à quatre joueurs avec les mêmes joueurs.
+     */
     private void restartFourPlayerGame() {
         if (game == null) return;
 
@@ -1135,10 +1067,29 @@ public class BombermanApp extends Application {
         startFourPlayerGame(names);
     }
 
+    /**
+     * Démarre une partie en mode Capture the Flag.
+     * @param playerNames tableau contenant les noms des joueurs
+     */
     public void startCTFGame(String[] playerNames) {
         try {
+            if (playerNames.length > 0) {
+                String firstPlayerName = playerNames[0];
+
+                PlayerProfile currentProfile = GameModeController.getCurrentGameProfile();
+                if (currentProfile == null || !currentProfile.getPlayerName().equals(firstPlayerName)) {
+                    try {
+                        ProfileManager profileManager = ProfileManager.getInstance();
+                        PlayerProfile profile = profileManager.loadProfile(firstPlayerName);
+                        GameModeController.setCurrentGameProfile(profile);
+                        System.out.println("🎮 Profil défini pour CTF: " + firstPlayerName);
+                    } catch (Exception e) {
+                        System.out.println("⚠️ Impossible de charger le profil pour " + firstPlayerName);
+                    }
+                }
+            }
             // ✅ CORRECTION: Utiliser GameMode du package model
-            game = new Game(playerNames, GameMode.CAPTURE_THE_FLAG);
+            game = new Game(playerNames, GameMode.CAPTURE_THE_FLAG, selectedLevelPath);
 
             // Créer le canvas
             int canvasWidth = game.getBoard().getCols() * 40;
@@ -1208,6 +1159,10 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Gère les événements de touche pressée pour le mode CTF.
+     * @param keyCode le code de la touche pressée
+     */
     private void handleKeyPressCTF(KeyCode keyCode) {
         // Si on est en phase de placement des drapeaux
         if (game.isInFlagSetupPhase()) {
@@ -1429,6 +1384,9 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Met à jour le texte de statut pour le mode CTF.
+     */
     private void updateStatusTextCTF() {
         if (statusText == null) return;
 
@@ -1500,84 +1458,21 @@ public class BombermanApp extends Application {
                 "\n💀 Joueurs éliminés peuvent encore bombarder | R:Restart T:Thème");
     }
 
-    //profil
-    private void recordGameSession() {
-        if (game == null || game.getPlayers().isEmpty()) return;
-
-        try {
-            // Enregistrer pour chaque joueur
-            for (Player player : game.getPlayers()) {
-                if (!(player instanceof BotPlayer)) { // Seulement les joueurs humains
-                    profileManager.recordGameSession(player.getName(), game);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l'enregistrement des sessions: " + e.getMessage());
-        }
-    }
-
-    private void loadPlayerPreferences(String playerName) {
-        try {
-            PlayerProfile profile = profileManager.loadProfile(playerName);
-
-            // Appliquer le thème préféré
-            if (renderer != null && profile.getPreferredTheme() != null) {
-                renderer.changeTheme(profile.getPreferredTheme());
-            }
-
-            // Autres préférences peuvent être appliquées ici
-            // (son, difficulté bot par défaut, etc.)
-
-        } catch (Exception e) {
-            System.err.println("Impossible de charger les préférences: " + e.getMessage());
-        }
-    }
-    private void recordDetailedGameSession(long gameStartTime) {
-        if (game == null || game.getPlayers().isEmpty()) return;
-
-        try {
-            for (Player player : game.getPlayers()) {
-                if (!(player instanceof BotPlayer)) {
-                    // Créer une session détaillée
-                    GameSession session = new GameSession();
-                    session.setStartTime(java.time.LocalDateTime.now().minusSeconds(
-                            (System.currentTimeMillis() - gameStartTime) / 1000));
-                    session.setGameMode(game.getGameMode());
-                    session.setPlayersCount(game.getPlayerCount());
-                    session.setBotGame(game.hasBots());
-
-                    if (game.hasBots()) {
-                        BotPlayer bot = game.getBot();
-                        session.setBotDifficulty(bot != null ? bot.getDifficulty() : 2);
-                    }
-
-                    // Déterminer le résultat
-                    Player winner = game.getWinner();
-                    session.setWon(winner != null && winner.equals(player));
-                    session.setWinnerName(winner != null ? winner.getName() : "Égalité");
-
-                    // Statistiques estimées (pourraient être améliorées avec un tracking en temps réel)
-                    session.setBombsPlaced(estimateBombsForPlayer(player));
-                    session.setEliminationsDealt(estimateEliminationsForPlayer(player));
-                    session.setDeaths(player.isEliminated() ? 1 : 0);
-
-                    session.finalize();
-
-                    // Enregistrer
-                    profileManager.recordCustomGameSession(player.getName(), session);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l'enregistrement détaillé: " + e.getMessage());
-        }
-    }
-
+    /**
+     * Estime le nombre de bombes posées par un joueur.
+     * @param player le joueur concerné
+     * @return une estimation du nombre de bombes posées
+     */
     private int estimateBombsForPlayer(Player player) {
         // Logique d'estimation basée sur la durée de jeu et l'activité
-        // Dans une version plus avancée, on pourrait tracker cela en temps réel
         return Math.max(1, (int) (Math.random() * 5) + 1);
     }
 
+    /**
+     * Estime le nombre d'éliminations effectuées par un joueur.
+     * @param player le joueur concerné
+     * @return une estimation du nombre d'éliminations
+     */
     private int estimateEliminationsForPlayer(Player player) {
         if (game.getWinner() != null && game.getWinner().equals(player)) {
             // Le gagnant a probablement fait des éliminations
@@ -1586,43 +1481,26 @@ public class BombermanApp extends Application {
         return 0;
     }
 
+    /**
+     * Retourne la fenêtre principale de l'application.
+     * @return la fenêtre principale
+     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    /**
+     * Point d'entrée de l'application.
+     * @param args arguments de la ligne de commande
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
-    private PlayerProfile currentProfile; // Profil actuel sélectionné
-    private long gameStartTime; // Pour calculer la durée des parties
-
     /**
-     * ✅ NOUVELLE MÉTHODE: Définit le profil actuel
+     * Enregistre les statistiques de la partie en cours.
+     * Sauvegarde la durée, le mode de jeu et les performances des joueurs.
      */
-    public void setCurrentProfile(PlayerProfile profile) {
-        this.currentProfile = profile;
-
-        // Appliquer les préférences du profil
-        if (profile != null) {
-            loadPlayerPreferences(profile.getPlayerName());
-        }
-    }
-
-    public PlayerProfile getCurrentProfile() {
-        return currentProfile;
-    }
-
-    public void startCanvasGameWithProfile() {
-        if (currentProfile != null) {
-            // Utiliser le profil pour le joueur 1
-            startCanvasGameWithNames(currentProfile.getPlayerName(), "Adversaire");
-        } else {
-            // Fallback vers la méthode normale
-            startCanvasGame();
-        }
-    }
-
     private void recordGameSessionWithDuration() {
         if (game == null || game.getPlayers().isEmpty()) return;
 
@@ -1680,86 +1558,12 @@ public class BombermanApp extends Application {
         }
     }
 
-    public void showCurrentProfileStats() {
-        if (currentProfile == null) {
-            showError("Aucun profil", "Aucun profil n'est actuellement sélectionné.");
-            return;
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/fr/univ/bomberman/fxml/profile/stats.fxml"));
-            Parent root = loader.load();
-
-            ProfileStatsController controller = loader.getController();
-            controller.setProfile(currentProfile);
-
-            Stage stage = new Stage();
-            stage.setTitle("Statistiques - " + currentProfile.getPlayerName());
-            stage.setScene(new Scene(root, 800, 600));
-            stage.setResizable(true);
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur", "Impossible d'ouvrir les statistiques: " + e.getMessage());
-        }
-    }
-
-    private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
     /**
-     * ✅ NOUVELLE MÉTHODE: Affiche un résumé rapide du profil actuel
+     * Définit le chemin du niveau sélectionné.
+     * @param path chemin vers le fichier de niveau
      */
-    public void showQuickProfileSummary() {
-        if (currentProfile == null) {
-            showInfo("Aucun profil",
-                    "❌ Aucun profil sélectionné\n\n" +
-                            "💡 Sélectionnez un profil pour sauvegarder vos statistiques !");
-            return;
-        }
-
-        StringBuilder summary = new StringBuilder();
-        summary.append("👤 PROFIL ACTUEL\n");
-        summary.append("═══════════════════\n\n");
-        summary.append("🏷️ Nom: ").append(currentProfile.getPlayerName()).append("\n");
-        summary.append("🏆 Rang: ").append(currentProfile.getRank().getDisplayName()).append("\n");
-        summary.append("📊 Niveau: ").append(currentProfile.getActivityLevel().getDisplayName()).append("\n\n");
-
-        summary.append("📈 STATISTIQUES:\n");
-        summary.append("🎮 Parties jouées: ").append(currentProfile.getTotalGamesPlayed()).append("\n");
-        summary.append("✅ Victoires: ").append(currentProfile.getTotalWins()).append("\n");
-        summary.append("📊 Taux de victoire: ").append(String.format("%.1f%%", currentProfile.getWinRatio())).append("\n");
-        summary.append("⏱️ Temps de jeu: ").append(currentProfile.getFormattedTotalPlayTime()).append("\n\n");
-
-        summary.append("🎨 PRÉFÉRENCES:\n");
-        summary.append("🖼️ Thème: ").append(currentProfile.getPreferredTheme()).append("\n");
-        summary.append("🔊 Son: ").append(currentProfile.isSoundEnabled() ? "Activé" : "Désactivé").append("\n");
-        summary.append("🤖 Difficulté bot: ").append(getDifficultyName(currentProfile.getPreferredBotDifficulty()));
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Profil Actuel");
-        alert.setHeaderText("📋 Résumé de votre profil");
-        alert.setContentText(summary.toString());
-        alert.getDialogPane().setPrefWidth(400);
-        alert.showAndWait();
+    public void setSelectedLevelPath(String path) {
+        this.selectedLevelPath = path;
+        System.out.println("🎮 Niveau sélectionné: " + path);
     }
-
-    /**
-     * ✅ MÉTHODE UTILITAIRE: Obtient le nom de la difficulté
-     */
-    private String getDifficultyName(int difficulty) {
-        switch (difficulty) {
-            case 1: return "Facile";
-            case 2: return "Moyen";
-            case 3: return "Difficile";
-            default: return "Moyen";
-        }
-    }
-
 }

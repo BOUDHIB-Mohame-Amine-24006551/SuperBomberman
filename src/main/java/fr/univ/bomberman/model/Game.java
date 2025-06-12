@@ -3,6 +3,7 @@ package fr.univ.bomberman.model;
 
 import fr.univ.bomberman.exceptions.BombermanException;
 
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,9 @@ public class Game {
     private List<Explosion> activeExplosions;
     private boolean gameOver;
     private GameMode gameMode;
+    private long gameStartTime;
+    private boolean statsUpdated = false;
+    private String levelPath; // Chemin du fichier de niveau
 
     // ============================================================================
     // ✅ NOUVELLES PROPRIÉTÉS POUR CTF
@@ -29,12 +33,22 @@ public class Game {
     private int currentPlayerSettingFlag;       // Joueur en train de placer son drapeau
     private Position[] proposedFlagPositions;   // Positions proposées pour les drapeaux
 
+
+
     /**
-     * Constructeur par défaut : Crée une partie 2 joueurs classique
+     * Constructeur avec fichier de niveau spécifié
+     * Initialise une partie en mode temps réel avec deux joueurs.
+     * @param levelPath chemin vers le fichier de niveau
      */
-    public Game() {
+    public Game(String levelPath) {
         this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
+        this.levelPath = levelPath;
+        try {
+            this.board = new Board(levelPath);
+        } catch (BombermanException e) {
+            System.err.println("Erreur lors du chargement du niveau, utilisation du niveau par défaut: " + e.getMessage());
+            this.board = new Board(15, 13);
+        }
         this.players = new ArrayList<>();
 
         // Créer 2 joueurs par défaut
@@ -43,11 +57,6 @@ public class Game {
         players.add(player1);
         players.add(player2);
 
-        // S'assurer que les zones de départ sont libres
-        clearStartingArea(new Position(1, 1));
-        clearStartingArea(new Position(board.getCols() - 2, board.getRows() - 2));
-
-        this.currentPlayerIndex = 0;
         this.activeBombs = new ArrayList<>();
         this.activeExplosions = new ArrayList<>();
         this.gameOver = false;
@@ -57,63 +66,27 @@ public class Game {
         this.flagSetupPhase = false;
         this.currentPlayerSettingFlag = -1;
         this.proposedFlagPositions = new Position[0];
+        this.gameStartTime = System.currentTimeMillis();
     }
 
-    /**
-     * Constructeur avec mode de jeu spécifié
-     */
-    public Game(GameMode mode) {
-        this(); // Appelle le constructeur par défaut
-        this.gameMode = mode;
-    }
+
+
+
+
+
+
+
+
+
 
     /**
-     * Constructeur avec le nombre de joueurs spécifié
+     * Constructeur avec noms personnalisés et fichier de niveau spécifiés
+     * @param playerNames tableau des noms des joueurs
+     * @param levelPath chemin vers le fichier de niveau
      */
-    public Game(int numberOfPlayers) {
-        this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
-        this.players = new ArrayList<>();
-
-        // Positions de départ pour 4 joueurs (aux 4 coins)
-        Position[] startPositions = {
-                new Position(1, 1),                                    // Joueur 1: Coin haut-gauche
-                new Position(board.getCols() - 2, 1),                  // Joueur 2: Coin haut-droite
-                new Position(1, board.getRows() - 2),                  // Joueur 3: Coin bas-gauche
-                new Position(board.getCols() - 2, board.getRows() - 2) // Joueur 4: Coin bas-droite
-        };
-
-        // Noms par défaut des joueurs
-        String[] defaultNames = {"Joueur 1", "Joueur 2", "Joueur 3", "Joueur 4"};
-
-        // Créer les joueurs
-        for (int i = 0; i < Math.min(numberOfPlayers, 4); i++) {
-            Player player = new Player(defaultNames[i], startPositions[i]);
-            players.add(player);
-            clearStartingArea(startPositions[i]);
-        }
-
-        this.currentPlayerIndex = 0;
-        this.activeBombs = new ArrayList<>();
-        this.activeExplosions = new ArrayList<>();
-        this.gameOver = false;
-
-        // Initialiser les propriétés CTF
-        this.flags = new ArrayList<>();
-        this.flagSetupPhase = false;
-        this.currentPlayerSettingFlag = -1;
-        this.proposedFlagPositions = new Position[0];
-
-        System.out.println("🎮 Partie " + numberOfPlayers + " joueurs créée !");
-    }
-
-    /**
-     * Constructeur avec noms personnalisés pour 4 joueurs
-     */
-    public Game(String[] playerNames) {
-        this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
-        this.players = new ArrayList<>();
+    public Game(String[] playerNames, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
 
         // Positions de départ pour 4 joueurs
         Position[] startPositions = {
@@ -124,6 +97,7 @@ public class Game {
         };
 
         // Créer les joueurs avec les noms fournis
+        this.players.clear();
         for (int i = 0; i < Math.min(playerNames.length, 4); i++) {
             String name = (playerNames[i] != null && !playerNames[i].trim().isEmpty())
                     ? playerNames[i].trim()
@@ -131,7 +105,6 @@ public class Game {
 
             Player player = new Player(name, startPositions[i]);
             players.add(player);
-            clearStartingArea(startPositions[i]);
         }
 
         this.currentPlayerIndex = 0;
@@ -148,16 +121,17 @@ public class Game {
         System.out.println("🎮 Partie " + playerNames.length + " joueurs créée avec noms personnalisés !");
     }
 
-    // ============================================================================
-    // ✅ NOUVEAU CONSTRUCTEUR POUR CTF
-    // ============================================================================
+
 
     /**
-     * Constructeur pour le mode Capture the Flag
+     * Constructeur pour le mode Capture the Flag avec fichier de niveau spécifié
+     * @param playerNames tableau des noms des joueurs
+     * @param mode mode de jeu
+     * @param levelPath chemin vers le fichier de niveau
      */
-    public Game(String[] playerNames, GameMode mode) {
-        // ✅ APPEL À this() EN PREMIER
-        this();
+    public Game(String[] playerNames, GameMode mode, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
 
         if (mode != GameMode.CAPTURE_THE_FLAG) {
             // Utiliser le constructeur normal pour les autres modes
@@ -179,7 +153,6 @@ public class Game {
 
                 Player player = new Player(name, startPositions[i]);
                 players.add(player);
-                clearStartingArea(startPositions[i]);
             }
 
             System.out.println("🎮 Partie " + playerNames.length + " joueurs créée en mode " + mode.getDisplayName());
@@ -188,7 +161,6 @@ public class Game {
 
         // Initialisation spéciale pour CTF
         this.gameMode = GameMode.CAPTURE_THE_FLAG;
-        this.board = new Board(15, 13);
         this.players.clear(); // Vider les joueurs par défaut
         this.flags = new ArrayList<>();
         this.flagSetupPhase = true;
@@ -227,23 +199,27 @@ public class Game {
         System.out.println("📍 Phase de placement des drapeaux commencée...");
     }
 
-    public Game(String playerName, int botDifficulty) {
-        this.gameMode = GameMode.REAL_TIME;
-        this.board = new Board(15, 13);
-        this.players = new ArrayList<>();
+
+
+    /**
+     * Constructeur pour le mode bot avec fichier de niveau spécifié
+     * @param playerName nom du joueur humain
+     * @param botDifficulty niveau de difficulté du bot (1-3)
+     * @param levelPath chemin vers le fichier de niveau
+     */
+    public Game(String playerName, int botDifficulty, String levelPath) {
+        this(levelPath);
+        this.gameStartTime = System.currentTimeMillis();
 
         // Créer le joueur humain
         Player human = new Player(playerName, new Position(1, 1));
+        players.clear();
         players.add(human);
 
         // Créer le bot
         String botName = "Bot " + getBotDifficultyName(botDifficulty);
         BotPlayer bot = new BotPlayer(botName, new Position(board.getCols() - 2, board.getRows() - 2), botDifficulty);
         players.add(bot);
-
-        // S'assurer que les zones de départ sont libres
-        clearStartingArea(new Position(1, 1));
-        clearStartingArea(new Position(board.getCols() - 2, board.getRows() - 2));
 
         this.currentPlayerIndex = 0;
         this.activeBombs = new ArrayList<>();
@@ -266,6 +242,9 @@ public class Game {
 
     /**
      * Obtient la position par défaut du drapeau pour un joueur
+     * @param playerIndex index du joueur
+     * @param playerStart position de départ du joueur
+     * @return la position par défaut du drapeau
      */
     private Position getDefaultFlagPosition(int playerIndex, Position playerStart) {
         // Positionner le drapeau à 2-3 cases du spawn du joueur
@@ -280,6 +259,7 @@ public class Game {
 
     /**
      * Vérifie si on est en phase de placement des drapeaux
+     * @return true si on est en phase de placement des drapeaux
      */
     public boolean isInFlagSetupPhase() {
         return flagSetupPhase;
@@ -287,6 +267,7 @@ public class Game {
 
     /**
      * Obtient le joueur en train de placer son drapeau
+     * @return le joueur actuel, ou null si aucun joueur ne place de drapeau
      */
     public Player getCurrentPlayerSettingFlag() {
         if (flagSetupPhase && currentPlayerSettingFlag < players.size()) {
@@ -297,6 +278,9 @@ public class Game {
 
     /**
      * Place le drapeau du joueur actuel à la position spécifiée
+     * @param position position où placer le drapeau
+     * @return true si le drapeau a été placé avec succès
+     * @throws BombermanException si le placement est invalide
      */
     public boolean placeFlagAt(Position position) throws BombermanException {
         if (!flagSetupPhase) {
@@ -336,6 +320,8 @@ public class Game {
 
     /**
      * Valide qu'une position est appropriée pour un drapeau
+     * @param position position à valider
+     * @return true si la position est valide pour un drapeau
      */
     private boolean isValidFlagPosition(Position position) {
         try {
@@ -455,36 +441,7 @@ public class Game {
         }
     }
 
-    /**
-     * Gère la chute des drapeaux quand un joueur est éliminé
-     */
-    public void handlePlayerElimination(Player eliminatedPlayer) {
-        if (gameMode != GameMode.CAPTURE_THE_FLAG) {
-            return;
-        }
 
-        // Faire tomber tous les drapeaux portés par ce joueur
-        for (Flag flag : flags) {
-            if (flag.getCarrier() != null && flag.getCarrier().equals(eliminatedPlayer)) {
-                Position dropPosition = eliminatedPlayer.getPosition();
-                flag.drop();
-
-                // Placer le drapeau sur le plateau à la position de chute
-                try {
-                    CellType flagType = CellType.getFlagTypeForPlayer(
-                            players.indexOf(flag.getOwner())
-                    );
-                    board.setCellType(dropPosition, flagType);
-                } catch (Exception e) {
-                    System.out.println("Erreur lors du placement du drapeau tombé : " + e.getMessage());
-                }
-            }
-        }
-
-        // Retirer les drapeaux capturés de la liste du joueur
-        eliminatedPlayer.clearCapturedFlags();
-        handlePlayerEliminationWithFlags(eliminatedPlayer);
-    }
 
     /**
      * Vérifie les conditions de victoire en mode CTF
@@ -502,6 +459,10 @@ public class Game {
             if (player.getCapturedFlagsCount() >= flagsNeeded) {
                 gameOver = true;
                 System.out.println("🏆 " + player.getName() + " remporte la victoire CTF en capturant tous les drapeaux !");
+
+                // ✅ NOUVEAU : Mettre à jour les stats pour CTF
+                updateProfileStats();
+
                 return true;
             }
         }
@@ -600,11 +561,18 @@ public class Game {
 
                 if (aliveCount == 1) {
                     Player winner = players.stream().filter(p -> !p.isEliminated()).findFirst().orElse(null);
-                    if (winner != null) {
-                        System.out.println("🏆 " + winner.getName() + " REMPORTE LA BATAILLE !");
-                    }
-                } else {
-                    System.out.println("💥 TOUS ÉLIMINÉS - ÉGALITÉ !");
+                }
+            }
+        }
+        if (gameMode != GameMode.CAPTURE_THE_FLAG) {
+            long aliveCount = players.stream().filter(p -> !p.isEliminated()).count();
+            if (aliveCount <= 1) {
+                gameOver = true;
+
+                if (aliveCount == 1) {
+                    Player winner = players.stream().filter(p -> !p.isEliminated()).findFirst().orElse(null);
+                    // ✅ NOUVEAU : Mettre à jour les stats quand il y a un gagnant
+                    updateProfileStats();
                 }
             }
         }
@@ -670,6 +638,10 @@ public class Game {
                 .orElse(null);
     }
 
+    /**
+     * Libère la zone de départ d'un joueur.
+     * @param center position centrale de la zone à libérer
+     */
     private void clearStartingArea(Position center) {
         try {
             for (int dx = -1; dx <= 1; dx++) {
@@ -686,81 +658,79 @@ public class Game {
     }
 
     /**
-     * @return le nombre de joueurs dans la partie
+     * Retourne le nombre de joueurs dans la partie.
+     * @return le nombre de joueurs
      */
     public int getPlayerCount() {
         return players.size();
     }
 
     /**
-     * @return le nombre de joueurs encore vivants
+     * Retourne le nombre de joueurs encore vivants.
+     * @return le nombre de joueurs vivants
      */
     public int getAlivePlayerCount() {
         return (int) players.stream().filter(p -> !p.isEliminated()).count();
     }
 
     /**
-     * @return le mode de jeu actuel
+     * Retourne le mode de jeu actuel.
+     * @return le mode de jeu
      */
     public GameMode getGameMode() {
         return gameMode;
     }
 
-    /**
-     * Change le mode de jeu
-     */
-    public void setGameMode(GameMode mode) {
-        this.gameMode = mode;
-        System.out.println("Mode de jeu changé vers: " + mode.getDisplayName());
-    }
+
 
     /**
-     * @return le plateau de jeu (Board)
+     * Retourne le plateau de jeu.
+     * @return le plateau de jeu
      */
     public Board getBoard() {
         return board;
     }
 
     /**
-     * @return le joueur dont c'est actuellement le tour
+     * Retourne le joueur dont c'est actuellement le tour.
+     * @return le joueur actuel
      */
     public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
     }
 
     /**
-     * @return la liste des joueurs
+     * Retourne la liste des joueurs.
+     * @return une copie de la liste des joueurs
      */
     public List<Player> getPlayers() {
         return new ArrayList<>(players);
     }
 
     /**
-     * @return la liste des bombes actives
+     * Retourne la liste des bombes actives.
+     * @return une copie de la liste des bombes actives
      */
     public List<Bomb> getActiveBombs() {
         return new ArrayList<>(activeBombs);
     }
 
     /**
-     * @return la liste des explosions actives
+     * Retourne la liste des explosions actives.
+     * @return une copie de la liste des explosions actives
      */
     public List<Explosion> getActiveExplosions() {
         return new ArrayList<>(activeExplosions);
     }
 
-    /**
-     * Trouve un joueur par son nom
-     */
-    public Player getPlayerByName(String name) {
-        return players.stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst()
-                .orElse(null);
-    }
+
 
     /**
-     * ✅ MÉTHODE MODIFIÉE : Déplacement avec gestion des drapeaux
+     * Déplace un joueur dans une direction donnée.
+     * @param playerIndex index du joueur à déplacer
+     * @param dx déplacement horizontal
+     * @param dy déplacement vertical
+     * @throws BombermanException si le déplacement est invalide
      */
     public void movePlayer(int playerIndex, int dx, int dy) throws BombermanException {
         if (gameOver) {
@@ -809,7 +779,9 @@ public class Game {
     }
 
     /**
-     * ✅ MÉTHODE MODIFIÉE : Placement de bombe avec support CTF
+     * Place une bombe pour un joueur spécifique
+     * @param playerIndex index du joueur
+     * @throws BombermanException si le placement est invalide
      */
     public void placeBombForPlayer(int playerIndex) throws BombermanException {
         if (isGameOver()) {
@@ -861,25 +833,7 @@ public class Game {
         System.out.println(player.getName() + " a posé une bombe en " + playerPosition + " - Cooldown activé !");
     }
 
-    public String getCooldownStatus() {
-        StringBuilder status = new StringBuilder();
 
-        for (int i = 0; i < players.size(); i++) {
-            Player player = players.get(i);
-            if (player.isEliminated() && gameMode != GameMode.CAPTURE_THE_FLAG) continue;
-
-            if (i > 0) status.append(" | ");
-
-            if (player.isOnBombCooldown()) {
-                long remaining = player.getRemainingCooldown();
-                status.append(player.getName()).append(": ⏱️").append(remaining / 100 / 10.0).append("s");
-            } else {
-                status.append(player.getName()).append(": ✅Prêt");
-            }
-        }
-
-        return status.toString();
-    }
 
     public void resetAllCooldowns() {
         for (Player player : players) {
@@ -888,123 +842,6 @@ public class Game {
         System.out.println("🔄 Cooldowns de tous les joueurs réinitialisés");
     }
 
-    /**
-     * Obtient un joueur spécifique par son index
-     */
-    public Player getPlayer(int playerIndex) {
-        if (playerIndex < 0 || playerIndex >= players.size()) {
-            return null;
-        }
-        return players.get(playerIndex);
-    }
-
-    /**
-     * Vérifie si un joueur spécifique peut se déplacer vers une position
-     */
-    public boolean canPlayerMove(int playerIndex, int dx, int dy) {
-        try {
-            if (playerIndex < 0 || playerIndex >= players.size()) {
-                return false;
-            }
-
-            Player player = players.get(playerIndex);
-            if (player.isEliminated()) {
-                return false;
-            }
-
-            Position newPos = new Position(player.getPosition().getX() + dx, player.getPosition().getY() + dy);
-
-            if (!board.isWithinBounds(newPos)) {
-                return false;
-            }
-
-            Cell targetCell = board.getCell(newPos);
-            if (targetCell.getType() == CellType.INDESTRUCTIBLE_WALL || targetCell.getType() == CellType.DESTRUCTIBLE_BRICK) {
-                return false;
-            }
-
-            for (Bomb bomb : activeBombs) {
-                if (bomb.getPosition().equals(newPos)) {
-                    return false;
-                }
-            }
-
-            for (Player otherPlayer : players) {
-                if (otherPlayer != player && !otherPlayer.isEliminated() && otherPlayer.getPosition().equals(newPos)) {
-                    return false;
-                }
-            }
-
-            return true;
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Déplace le joueur courant (pour compatibilité)
-     */
-    public void moveCurrentPlayer(int dx, int dy) throws BombermanException {
-        movePlayer(currentPlayerIndex, dx, dy);
-    }
-
-    /**
-     * Place une bombe pour un joueur spécifique
-     */
-    public void placeBomb(Player player) throws BombermanException {
-        if (gameOver) {
-            throw new BombermanException("La partie est terminée.");
-        }
-
-        if (player.isEliminated() && gameMode != GameMode.CAPTURE_THE_FLAG) {
-            throw new BombermanException("Le joueur " + player.getName() + " est éliminé.");
-        }
-
-        if (gameMode == GameMode.TURN_BASED && !player.equals(getCurrentPlayer())) {
-            throw new BombermanException("Ce n'est pas le tour de " + player.getName());
-        }
-
-        Position pos = player.getPosition();
-
-        for (Bomb b : activeBombs) {
-            if (b.getPosition().equals(pos)) {
-                throw new BombermanException("Une bombe est déjà présente sur cette case.");
-            }
-        }
-
-        Bomb bomb = new Bomb(pos, player, board);
-        activeBombs.add(bomb);
-    }
-
-    /**
-     * Place une bombe pour le joueur courant
-     */
-    public void placeBomb() throws BombermanException {
-        placeBomb(getCurrentPlayer());
-    }
-
-    /**
-     * Passe au tour du joueur suivant
-     */
-    private void nextTurn() {
-        if (gameMode != GameMode.TURN_BASED) {
-            return;
-        }
-
-        do {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        } while (players.get(currentPlayerIndex).isEliminated() && !gameOver);
-    }
-
-    /**
-     * Permet de changer de joueur manuellement
-     */
-    public void switchPlayer() {
-        if (gameMode == GameMode.TURN_BASED) {
-            nextTurn();
-        }
-    }
 
     /**
      * @return true si la partie est terminée
@@ -1043,83 +880,16 @@ public class Game {
      */
     public void endGame() {
         this.gameOver = true;
+        updateProfileStats();
     }
 
-    /**
-     * Redémarre le jeu avec le même mode
-     */
-    public void restart() {
-        GameMode currentMode = this.gameMode;
-        this.board = new Board(15, 13);
-        this.players.clear();
-        Player player1 = new Player("Joueur 1", new Position(1, 1));
-        Player player2 = new Player("Joueur 2", new Position(board.getCols() - 2, board.getRows() - 2));
-        players.add(player1);
-        players.add(player2);
-        this.currentPlayerIndex = 0;
-        this.activeBombs.clear();
-        this.activeExplosions.clear();
-        this.gameOver = false;
-        this.gameMode = currentMode;
 
-        // Réinitialiser les propriétés CTF
-        this.flags.clear();
-        this.flagSetupPhase = false;
-        this.currentPlayerSettingFlag = -1;
-        this.proposedFlagPositions = new Position[0];
-    }
 
     // ============================================================================
     // ✅ MÉTHODES UTILITAIRES CTF
     // ============================================================================
 
-    /**
-     * Obtient les positions par défaut des drapeaux (pour l'interface)
-     */
-    public Position[] getProposedFlagPositions() {
-        return proposedFlagPositions != null ? proposedFlagPositions.clone() : new Position[0];
-    }
 
-    /**
-     * Affiche l'état actuel du CTF
-     */
-    public void printCTFStatus() {
-        if (gameMode != GameMode.CAPTURE_THE_FLAG) {
-            return;
-        }
-
-        System.out.println("🏁 === ÉTAT CTF ===");
-        for (Player player : players) {
-            String status = player.isEliminated() ? "💀 Éliminé" : "❤️ Vivant";
-            System.out.println(player.getName() + " " + status + " - Drapeaux capturés: " + player.getCapturedFlagsCount());
-        }
-
-        System.out.println("Drapeaux:");
-        for (Flag flag : flags) {
-            String location = flag.isBeingCarried() ?
-                    "porté par " + flag.getCarrier().getName() :
-                    "au sol en " + flag.getCurrentPosition();
-            System.out.println("🏁 " + flag.getOwner().getName() + ": " + location);
-        }
-        System.out.println("==================");
-    }
-
-    /**
-     * Force le placement automatique des drapeaux (pour les tests)
-     */
-    public void autoPlaceFlags() {
-        if (!flagSetupPhase) return;
-
-        try {
-            while (flagSetupPhase) {
-                Position pos = proposedFlagPositions[currentPlayerSettingFlag];
-                placeFlagAt(pos);
-            }
-            System.out.println("🏁 Placement automatique des drapeaux terminé !");
-        } catch (Exception e) {
-            System.out.println("Erreur lors du placement automatique : " + e.getMessage());
-        }
-    }
     private void handlePlayerEliminationWithFlags(Player eliminatedPlayer) {
         if (gameMode != GameMode.CAPTURE_THE_FLAG) {
             return;
@@ -1196,4 +966,26 @@ public class Game {
 
         System.out.println("✅ Gestion des drapeaux terminée pour " + eliminatedPlayer.getName());
     }
+    public long getGameDurationSeconds() {
+        return (System.currentTimeMillis() - gameStartTime) / 1000;
+    }
+
+    /**
+     * Met à jour les statistiques du profil à la fin de la partie
+     */
+    private void updateProfileStats() {
+        if (statsUpdated) {
+            return; // Éviter les doubles mises à jour
+        }
+
+        statsUpdated = true;
+
+        // Trouver le joueur humain (pas un bot)
+        Player humanPlayer = getHumanPlayer();
+        if (humanPlayer != null) {
+            long duration = getGameDurationSeconds();
+            GameEndHandler.handleGameEnd(this, humanPlayer.getName(), duration);
+        }
+    }
+
 }

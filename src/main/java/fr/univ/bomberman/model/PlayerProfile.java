@@ -42,22 +42,7 @@ public class PlayerProfile {
     // Rang du joueur
     private Rank rank;
 
-    /**
-     * Constructeur par défaut pour la désérialisation JSON
-     */
-    public PlayerProfile() {
-        this.creationDate = LocalDateTime.now();
-        this.lastPlayDate = LocalDateTime.now();
-        this.classicModeStats = new GameModeStats();
-        this.battleRoyaleStats = new GameModeStats();
-        this.botModeStats = new GameModeStats();
-        this.ctfModeStats = new GameModeStats();
-        this.recentGames = new ArrayList<>();
-        this.preferredTheme = "default";
-        this.soundEnabled = true;
-        this.preferredBotDifficulty = 2;
-        this.rank = Rank.BRONZE; // Rang initial
-    }
+
 
     /**
      * Constructeur avec nom de joueur
@@ -88,76 +73,7 @@ public class PlayerProfile {
     // MÉTHODES DE GESTION DES PARTIES
     // ============================================================================
 
-    /**
-     * Enregistre une nouvelle partie terminée
-     */
-    public void recordGameSession(GameSession session) {
-        // Mettre à jour les statistiques générales
-        totalGamesPlayed++;
-        if (session.isWon()) {
-            totalWins++;
-        } else {
-            totalLosses++;
-        }
-        totalBombsPlaced += session.getBombsPlaced();
-        totalEliminatonsDealt += session.getEliminationsDealt();
-        totalDeaths += session.getDeaths();
-        totalPlayTimeSeconds += session.getDurationSeconds();
 
-        // Mettre à jour les statistiques par mode
-        GameModeStats modeStats = getStatsForMode(session.getGameMode());
-        modeStats.recordGame(session);
-
-        // Ajouter à l'historique (garder seulement les 50 dernières)
-        recentGames.add(0, session);
-        if (recentGames.size() > 50) {
-            recentGames = recentGames.subList(0, 50);
-        }
-
-        // Mettre à jour la date de dernière partie
-        this.lastPlayDate = LocalDateTime.now();
-
-        // Mettre à jour le rang si victoire
-        if (session.isWon()) {
-            Rank oldRank = getRank();
-            updateRank();
-
-            // Log de promotion si applicable
-            if (getRank().isHigherThan(oldRank)) {
-                System.out.println("🎉 PROMOTION ! " + playerName +
-                        " passe du rang " + oldRank.getDisplayName() +
-                        " au rang " + getRank().getDisplayName() + " !");
-            }
-        }
-    }
-
-    /**
-     * Met à jour le profil après une partie
-     */
-    public void updateAfterGame(boolean won, GameMode gameMode, int durationSeconds) {
-        // Mettre à jour la date de dernière partie
-        this.lastPlayDate = LocalDateTime.now();
-
-        // Ajouter le temps de jeu
-        this.totalPlayTimeSeconds += durationSeconds;
-
-        // Mettre à jour les statistiques selon le mode
-        GameModeStats stats = getStatsForMode(gameMode);
-        if (stats != null) {
-            stats.addGame(won);
-        }
-
-        // Mettre à jour le rang si victoire
-        if (won) {
-            Rank oldRank = getRank();
-            updateRank();
-
-            // Log de promotion si applicable
-            if (getRank().isHigherThan(oldRank)) {
-                System.out.println("🎉 " + playerName + " a été promu au rang " + getRank().getDisplayName() + " !");
-            }
-        }
-    }
 
     /**
      * Obtient les statistiques pour un mode de jeu donné
@@ -190,13 +106,6 @@ public class PlayerProfile {
         return (double) totalWins / totalGamesPlayed * 100.0;
     }
 
-    /**
-     * Calcule le temps de jeu moyen par partie (en minutes)
-     */
-    public double getAverageGameDuration() {
-        if (totalGamesPlayed == 0) return 0.0;
-        return (double) totalPlayTimeSeconds / totalGamesPlayed / 60.0;
-    }
 
     /**
      * Calcule le ratio éliminations/morts
@@ -220,12 +129,7 @@ public class PlayerProfile {
         return rank;
     }
 
-    /**
-     * Définit le rang du joueur
-     */
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
+
 
     /**
      * Met à jour le rang basé sur le nombre total de victoires
@@ -241,129 +145,6 @@ public class PlayerProfile {
         Rank currentRank = getRank();
         Rank calculatedRank = Rank.calculateRank(getTotalWins());
         return calculatedRank.isHigherThan(currentRank);
-    }
-
-    /**
-     * Obtient les informations de progression vers le prochain rang
-     */
-    public String getRankProgressInfo() {
-        return getRank().getFormattedProgressInfo(getTotalWins());
-    }
-
-    /**
-     * Obtient une barre de progression vers le prochain rang
-     */
-    public String getRankProgressBar() {
-        return getRank().getProgressBar(getTotalWins(), 20);
-    }
-
-    /**
-     * Obtient le pourcentage de progression vers le prochain rang
-     */
-    public double getRankProgressPercentage() {
-        return getRank().getProgressToNextRank(getTotalWins());
-    }
-
-    /**
-     * Vérifie si le joueur a atteint le rang maximum
-     */
-    public boolean hasMaxRank() {
-        return getRank() == Rank.DIAMOND;
-    }
-
-    /**
-     * Obtient le nombre de victoires nécessaires pour le prochain rang
-     */
-    public int getWinsToNextRank() {
-        return getRank().getWinsToNextRank(getTotalWins());
-    }
-
-    /**
-     * Obtient le rang sous forme de string pour la sauvegarde
-     */
-    public String getRankAsString() {
-        return getRank().name();
-    }
-
-    /**
-     * Définit le rang depuis une string lors du chargement
-     */
-    public void setRankFromString(String rankString) {
-        this.rank = Rank.fromString(rankString);
-    }
-
-    // ============================================================================
-    // MÉTHODES DE GESTION DE L'ACTIVITÉ
-    // ============================================================================
-
-    /**
-     * Obtient le niveau d'activité du joueur
-     */
-    public ActivityLevel getActivityLevel() {
-        return ActivityLevel.calculateActivityLevel(getTotalGamesPlayed());
-    }
-
-    /**
-     * Obtient les informations de progression d'activité
-     */
-    public String getActivityProgressInfo() {
-        ActivityLevel currentLevel = getActivityLevel();
-        ActivityLevel nextLevel = currentLevel.getNextLevel();
-
-        if (nextLevel == currentLevel) {
-            return "🏆 Niveau d'activité maximum atteint !";
-        }
-
-        int gamesNeeded = currentLevel.getGamesToNextLevel(getTotalGamesPlayed());
-        return String.format("Prochain niveau: %s (%d parties nécessaires)",
-                nextLevel.getDisplayName(), gamesNeeded);
-    }
-
-    // ============================================================================
-    // MÉTHODES UTILITAIRES
-    // ============================================================================
-
-    /**
-     * Duplique ce profil avec un nouveau nom
-     */
-    public PlayerProfile duplicate(String newName) {
-        PlayerProfile duplicated = new PlayerProfile(newName);
-
-        // Copier les préférences
-        duplicated.setPreferredTheme(this.preferredTheme);
-        duplicated.setSoundEnabled(this.soundEnabled);
-        duplicated.setPreferredBotDifficulty(this.preferredBotDifficulty);
-
-        // Nouvelle date de création
-        duplicated.creationDate = LocalDateTime.now();
-        duplicated.lastPlayDate = LocalDateTime.now();
-
-        return duplicated;
-    }
-
-    /**
-     * Met à jour la date de dernière connexion
-     */
-    public void updateLastPlayDate() {
-        this.lastPlayDate = LocalDateTime.now();
-    }
-
-    /**
-     * Vérifie si le profil a été utilisé récemment
-     */
-    public boolean isRecentlyUsed(int days) {
-        return java.time.Duration.between(lastPlayDate, LocalDateTime.now()).toDays() <= days;
-    }
-
-    /**
-     * Obtient une description courte du profil
-     */
-    public String getShortDescription() {
-        return String.format("%s (%s) - %d parties, %.1f%% victoires",
-                playerName,
-                getRank().getDisplayName(),
-                getTotalGamesPlayed(),
-                getWinRatio());
     }
 
     // ============================================================================
@@ -481,40 +262,20 @@ public class PlayerProfile {
         return classicModeStats;
     }
 
-    public void setClassicModeStats(GameModeStats classicModeStats) {
-        this.classicModeStats = classicModeStats;
-    }
-
     public GameModeStats getBattleRoyaleStats() {
         return battleRoyaleStats;
-    }
-
-    public void setBattleRoyaleStats(GameModeStats battleRoyaleStats) {
-        this.battleRoyaleStats = battleRoyaleStats;
     }
 
     public GameModeStats getBotModeStats() {
         return botModeStats;
     }
 
-    public void setBotModeStats(GameModeStats botModeStats) {
-        this.botModeStats = botModeStats;
-    }
-
     public GameModeStats getCtfModeStats() {
         return ctfModeStats;
     }
 
-    public void setCtfModeStats(GameModeStats ctfModeStats) {
-        this.ctfModeStats = ctfModeStats;
-    }
-
     public List<GameSession> getRecentGames() {
         return recentGames;
-    }
-
-    public void setRecentGames(List<GameSession> recentGames) {
-        this.recentGames = recentGames;
     }
 
     public String getPreferredTheme() {

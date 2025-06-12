@@ -2,17 +2,18 @@
 package fr.univ.bomberman.controller;
 
 import fr.univ.bomberman.BombermanApp;
+import fr.univ.bomberman.model.PlayerProfile;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 import java.util.Optional;
 
@@ -25,13 +26,18 @@ public class GameModeController {
     @FXML private Button fourPlayerButton;
     @FXML private Button settingsButton;
     @FXML private Button themeButton;
-    @FXML private Button playerNamesButton;
     @FXML private Button backButton;
     @FXML private Button quitButton;
+    @FXML private Button selectProfileButton;
+    @FXML private Button selectLevelButton;
+    private PlayerProfile currentProfile;
+    private static PlayerProfile currentGameProfile = null;
 
     private BombermanApp bombermanApp;
     private String player1Name = "Joueur 1";
     private String player2Name = "Joueur 2";
+
+    @FXML private Label currentProfileLabel;
 
     /**
      * Initialisation du contrôleur
@@ -104,7 +110,7 @@ public class GameModeController {
      * Lance le mode 4 joueurs (Bataille Royale)
      */
     @FXML
-    private void onFourPlayerMode(ActionEvent event) {
+    private void onFourPlayerMode() {
         try {
             System.out.println("Lancement du mode 4 joueurs - Bataille Royale");
 
@@ -166,70 +172,14 @@ public class GameModeController {
         themeAlert.setTitle("🎨 Thèmes visuels");
         themeAlert.setHeaderText("Changement de thème");
         themeAlert.setContentText("🎨 Thèmes disponibles:\n" +
-                "• Default - Thème classique\n" +
-                "• Pokemon - Personnages Pokemon\n\n" +
+                "Default - Thème classique\n" +
+                "Pokemon - Personnages Pokemon\n\n" +
                 "💡 Changez de thème en jeu avec la touche T\n" +
                 "🖼️ Ajoutez vos propres images dans:\n" +
                 "resources/fr/univ/bomberman/image/[theme]/");
         themeAlert.showAndWait();
     }
 
-    /**
-     * Modification des noms des joueurs
-     */
-    @FXML
-    private void onPlayerNames(ActionEvent event) {
-        try {
-            // Joueur 1
-            TextInputDialog dialog1 = new TextInputDialog(player1Name);
-            dialog1.setTitle("Nom du Joueur 1");
-            dialog1.setHeaderText("🔵 Joueur 1 (ZQSD + ESPACE)");
-            dialog1.setContentText("Nom:");
-
-            Optional<String> result1 = dialog1.showAndWait();
-            if (result1.isPresent() && !result1.get().trim().isEmpty()) {
-                String newName1 = result1.get().trim();
-
-                if (newName1.length() > 15) {
-                    showError("Nom trop long", "Maximum 15 caractères");
-                    return;
-                }
-
-                // Joueur 2
-                TextInputDialog dialog2 = new TextInputDialog(player2Name);
-                dialog2.setTitle("Nom du Joueur 2");
-                dialog2.setHeaderText("🟢 Joueur 2 (↑↓←→ + ENTRÉE)");
-                dialog2.setContentText("Nom:");
-
-                Optional<String> result2 = dialog2.showAndWait();
-                if (result2.isPresent() && !result2.get().trim().isEmpty()) {
-                    String newName2 = result2.get().trim();
-
-                    if (newName2.length() > 15) {
-                        showError("Nom trop long", "Maximum 15 caractères");
-                        return;
-                    }
-
-                    if (newName1.equals(newName2)) {
-                        showError("Noms identiques", "Les joueurs doivent avoir des noms différents");
-                        return;
-                    }
-
-                    // Sauvegarder
-                    player1Name = newName1;
-                    player2Name = newName2;
-
-                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                    successAlert.setTitle("✅ Noms mis à jour");
-                    successAlert.setContentText("🔵 " + player1Name + " vs 🟢 " + player2Name + "\n\nPrêts pour le combat !");
-                    successAlert.showAndWait();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur", "Problème lors de la modification des noms");
-        }
-    }
 
     /**
      * Retour au menu principal
@@ -263,8 +213,8 @@ public class GameModeController {
     private void onQuit(ActionEvent event) {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Quitter");
-        confirmAlert.setHeaderText("🚪 Partir déjà ?");
-        confirmAlert.setContentText("Êtes-vous sûr de vouloir quitter Super Bomberman ?");
+        confirmAlert.setHeaderText("Quitter");
+        confirmAlert.setContentText("Tu vas où comme ça ? " + "\n" + "reste ici");
 
         Optional<ButtonType> result = confirmAlert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -491,11 +441,6 @@ public class GameModeController {
     // Ajout de la méthode pour le mode CTF dans GameModeController.java
 
     /**
-     * Lance le mode Capture The Flag
-     */
-
-
-    /**
      * Demande les noms des joueurs pour le mode CTF
      */
     private String[] getCTFPlayerNames(int playerCount) {
@@ -642,7 +587,7 @@ public class GameModeController {
             StringBuilder confirmContent = new StringBuilder();
             confirmContent.append("⚔️ Participants CTF :\n");
             String[] colors = {"🔴", "🔵", "🟡", "🟢"};
-            String[] controls = {"ZQSD + A", "↑↓←→ + ENTRÉE", "IJKL + U", "8456 + 7"};
+            String[] controls = {" ZQSD + A", "↑↓←→ + ENTRÉE", "IJKL + U", "8456 + 7"};
 
             for (int i = 0; i < playerCount; i++) {
                 confirmContent.append(colors[i]).append(" ").append(playerNames[i]);
@@ -673,5 +618,153 @@ public class GameModeController {
         }
     }
 
+    //profil
+    @FXML
+    private void onSelectProfile() {
+        openProfileSelection();
+    }
+
+    private void updateCurrentProfileDisplay() {
+        if (currentProfileLabel != null) {
+            if (currentProfile != null) {
+                currentProfileLabel.setText("👤 " + currentProfile.getPlayerName() +
+                        " (" + currentProfile.getRank().getDisplayName() + ")");
+                currentProfileLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+            } else {
+                currentProfileLabel.setText("👤 Aucun profil sélectionné");
+                currentProfileLabel.setStyle("-fx-text-fill: #e74c3c;");
+            }
+        }
+    }
+
+    private void applyProfilePreferences() {
+        if (currentProfile == null) return;
+
+        try {
+            // Mettre à jour les noms par défaut avec le profil
+            player1Name = currentProfile.getPlayerName();
+            player2Name = "Adversaire"; // Nom par défaut pour le second joueur
+
+            // Autres préférences pourraient être appliquées ici
+            // (thème, son, etc.)
+
+            System.out.println("Préférences appliquées pour: " + currentProfile.getPlayerName());
+
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'application des préférences: " + e.getMessage());
+        }
+    }
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    public static void setCurrentGameProfile(PlayerProfile profile) {
+        currentGameProfile = profile;
+        System.out.println("🎮 Profil défini pour la partie: " + (profile != null ? profile.getPlayerName() : "Aucun"));
+    }
+
+    public static PlayerProfile getCurrentGameProfile() {
+        return currentGameProfile;
+    }
+
+
+    // Modifiez la méthode onSelectProfile existante pour définir le profil courant
+    private void openProfileSelection() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/fr/univ/bomberman/fxml/profile/profile_selection.fxml"));
+            Parent root = loader.load();
+
+            ProfileSelectionController controller = loader.getController();
+            controller.setBombermanApp(bombermanApp);
+
+            Stage stage = new Stage();
+            stage.setTitle("🎮 Gestion des Profils - Super Bomberman");
+            stage.setScene(new Scene(root, 900, 600));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(true);
+
+            if (bombermanApp != null && bombermanApp.getPrimaryStage() != null) {
+                Stage primaryStage = bombermanApp.getPrimaryStage();
+                stage.initOwner(primaryStage);
+                stage.setX(primaryStage.getX() + (primaryStage.getWidth() - 900) / 2);
+                stage.setY(primaryStage.getY() + (primaryStage.getHeight() - 600) / 2);
+            }
+
+            stage.showAndWait();
+
+            if (controller.isProfileSelected()) {
+                currentProfile = controller.getSelectedProfile();
+                // ✅ NOUVEAU: Définir le profil pour toute la session de jeu
+                setCurrentGameProfile(currentProfile);
+
+                updateCurrentProfileDisplay();
+
+                showInfo("Profil sélectionné",
+                        "✅ Profil actif: " + currentProfile.getPlayerName() + "\n" +
+                                "🏆 Rang: " + currentProfile.getRank().getDisplayName() + "\n" +
+                                "🎮 Parties jouées: " + currentProfile.getTotalGamesPlayed() + "\n" +
+                                "📊 Taux de victoire: " + String.format("%.1f%%", currentProfile.getWinRatio()));
+
+                applyProfilePreferences();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Erreur", "Impossible d'ouvrir la gestion des profils: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Gère la sélection d'un niveau via FileChooser
+     */
+    @FXML
+    private void onSelectLevel(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner un niveau");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Fichiers XML", "*.json")
+        );
+        
+        // Définir le répertoire par défaut
+        File defaultDir = new File("src/main/resources/fr/univ/bomberman/level");
+        if (defaultDir.exists()) {
+            fileChooser.setInitialDirectory(defaultDir);
+        }
+        
+        File file = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+        if (file != null) {
+            try {
+                // Convertir le chemin en chemin relatif si possible
+                String relativePath = getRelativePath(file);
+                if (bombermanApp != null) {
+                    bombermanApp.setSelectedLevelPath(relativePath);
+                    showInfo("Niveau sélectionné", "Le niveau a été sélectionné avec succès !");
+                }
+            } catch (Exception e) {
+                showError("Erreur", "Impossible de sélectionner le niveau: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Convertit un chemin absolu en chemin relatif par rapport au dossier resources
+     */
+    private String getRelativePath(File file) {
+        String absolutePath = file.getAbsolutePath();
+        String resourcesPath = "src/main/resources/fr/univ/bomberman/level";
+        
+        // Si le fichier est dans le dossier resources, retourner le chemin relatif
+        if (absolutePath.contains(resourcesPath)) {
+            int index = absolutePath.indexOf(resourcesPath);
+            return absolutePath.substring(index + resourcesPath.length() + 1);
+        }
+        
+        // Sinon, retourner le chemin absolu
+        return absolutePath;
+    }
 
 }

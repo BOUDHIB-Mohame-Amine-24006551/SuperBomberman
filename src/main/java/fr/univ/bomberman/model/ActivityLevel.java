@@ -14,16 +14,32 @@ public enum ActivityLevel {
     private final String displayName;
     private final String color;
 
+    /**
+     * Constructeur de l'énumération ActivityLevel
+     * @param displayName Nom affiché du niveau
+     * @param color Code couleur associé au niveau
+     */
     ActivityLevel(String displayName, String color) {
         this.displayName = displayName;
         this.color = color;
     }
 
+    /**
+     * Retourne le nom affiché du niveau 
+     * @return le nom affiché du niveau
+     */
     public String getDisplayName() { return displayName; }
+
+    /**
+     * Retourne la couleur associée au niveau
+     * @return le code couleur 
+     */
     public String getColor() { return color; }
 
     /**
      * Calcule le niveau d'activité basé sur le nombre de parties jouées
+     * @param gamesPlayed nombre total de parties jouées
+     * @return le niveau d'activité correspondant
      */
     public static ActivityLevel calculateActivityLevel(int gamesPlayed) {
         if (gamesPlayed == 0) return NOUVEAU;
@@ -48,7 +64,8 @@ public enum ActivityLevel {
     }
 
     /**
-     * Obtient le nombre de parties nécessaires pour le niveau suivant
+     * Obtient le nombre de parties nécessaires pour atteindre le niveau suivant
+     * @return le nombre de parties requis pour le prochain niveau
      */
     public int getGamesToNextLevel(int currentGames) {
         switch (this) {

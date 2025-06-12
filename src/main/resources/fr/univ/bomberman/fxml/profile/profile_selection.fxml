@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.ProfileSelectionController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.bomberman.controller.ProfileSelectionController">
     <top>
         <VBox spacing="10.0" BorderPane.alignment="CENTER">
             <children>
@@ -37,7 +37,7 @@
                                     </font>
                                 </Label>
                                 <Region HBox.hgrow="ALWAYS" />
-                                <Button fx:id="refreshButton" onAction="#refreshProfiles" text="🔄 Actualiser" />
+                                <Button fx:id="refreshButton" onAction="#onRefresh" text="🔄 Actualiser" />
                             </children>
                         </HBox>
                         <TableView fx:id="profilesTable" prefHeight="200.0">
@@ -55,7 +55,7 @@
                         <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                     </padding>
                 </VBox>
-                <VBox spacing="15.0">
+                <VBox prefHeight="262.0" prefWidth="680.0" spacing="15.0">
                     <children>
                         <HBox spacing="20.0">
                             <children>
@@ -126,7 +126,7 @@
                                 <Button fx:id="duplicateButton" maxWidth="1.7976931348623157E308" onAction="#onDuplicateProfile" text="📋 Dupliquer" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                                 <Button fx:id="deleteButton" maxWidth="1.7976931348623157E308" onAction="#onDeleteProfile" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="🗑️ Supprimer" GridPane.columnIndex="2" GridPane.rowIndex="0" />
                                 <Button fx:id="importButton" maxWidth="1.7976931348623157E308" onAction="#onImportProfile" text="📥 Importer" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                                <Button fx:id="exportButton" maxWidth="1.7976931348623157E308" onAction="#onExportProfile" text="📤 Exporter" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <Button fx:id="exportButton" maxWidth="1.7976931348623157E308" onAction="#onExportProfile" prefHeight="73.0" prefWidth="205.0" text="📤 Exporter" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                             </children>
                         </GridPane>
                     </children>
@@ -138,7 +138,7 @@
         </SplitPane>
     </center>
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER_RIGHT" prefHeight="47.0" prefWidth="677.0" spacing="15.0" BorderPane.alignment="CENTER">
             <children>
                 <Button fx:id="selectButton" onAction="#onSelectProfile" prefWidth="120.0" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="✅ Sélectionner">
                     <font>
