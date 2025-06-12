@@ -106,13 +106,4 @@ public class GameModeStats {
             losses++;
         }
     }
-
-    public void addGame(boolean won) {
-        gamesPlayed++;
-        if (won) {
-            wins++;
-        } else {
-            losses++;
-        }
-    }
 }
