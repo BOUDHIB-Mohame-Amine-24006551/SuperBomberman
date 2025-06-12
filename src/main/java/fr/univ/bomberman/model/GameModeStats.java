@@ -1,7 +1,7 @@
 package fr.univ.bomberman.model;
 
 /**
- * Statistiques pour un mode de jeu spécifique
+ * Cette classe permet de suivre les performances d'un joueur dans un mode particulier.
  */
 public class GameModeStats {
     private int gamesPlayed;
@@ -78,7 +78,6 @@ public class GameModeStats {
         this.wins = wins;
     }
 
-
     public long getTotalPlayTimeSeconds() {
         return totalPlayTimeSeconds;
     }
@@ -95,6 +94,10 @@ public class GameModeStats {
         this.botWins = botWins;
     }
 
+    /**
+     * Ajoute une partie aux statistiques et met à jour le nombre de victoires/défaites.
+     * @param won true si la partie a été gagnée, false sinon
+     */
     public void addGame(boolean won) {
         gamesPlayed++;
         if (won) {
@@ -103,5 +106,4 @@ public class GameModeStats {
             losses++;
         }
     }
-
 }

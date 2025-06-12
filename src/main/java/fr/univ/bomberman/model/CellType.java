@@ -1,5 +1,9 @@
 package fr.univ.bomberman.model;
 
+/**
+ * Énumération représentant les différents types de cellules possibles sur le plateau de jeu.
+ * Chaque type de cellule a un comportement spécifique dans le jeu.
+ */
 public enum CellType {
     EMPTY,
     INDESTRUCTIBLE_WALL,

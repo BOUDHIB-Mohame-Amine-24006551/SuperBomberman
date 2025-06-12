@@ -22,7 +22,12 @@ import javafx.stage.Stage;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/**
+ * Classe principale de l'application Super Bomberman.
+ * Cette classe gère l'interface graphique JavaFX et coordonne les différents modes de jeu.
+ * Elle implémente la logique de contrôle des joueurs, la gestion des événements clavier,
+ * et l'affichage du jeu en temps réel.
+ */
 public class BombermanApp extends Application {
 
     private Stage primaryStage;
@@ -41,7 +46,11 @@ public class BombermanApp extends Application {
     private long gameStartTime; // Pour calculer la durée des parties
     private String selectedLevelPath = "src/main/resources/fr/univ/bomberman/level/default/level.json"; // Chemin du niveau sélectionné
 
-
+    /**
+     * Point d'entrée principal de l'application JavaFX.
+     * Initialise la fenêtre principale et affiche le menu de démarrage.
+     * @param primaryStage la fenêtre principale de l'application
+     */
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -51,7 +60,8 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Affiche le menu principal FXML
+     * Affiche le menu principal de l'application.
+     * Charge l'interface FXML et configure les styles CSS.
      */
     public void showMenu() {
         try {
@@ -99,10 +109,9 @@ public class BombermanApp extends Application {
         }
     }
 
-
-
     /**
-     * MODIFIÉE: Version avec limitation de vitesse pour un contrôle plus précis
+     * Traite les entrées continues du clavier pour le mouvement des joueurs.
+     * Gère les déplacements avec un délai entre chaque mouvement.
      */
     private void processContinuousInput() {
         if (game.isGameOver()) return;
@@ -157,7 +166,10 @@ public class BombermanApp extends Application {
         }
     }
 
-
+    /**
+     * Change le thème visuel du jeu.
+     * Alterne entre les thèmes disponibles.
+     */
     private void changeTheme() {
         if (renderer == null) return;
 
@@ -183,6 +195,11 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Démarre une partie à deux joueurs avec des noms personnalisés.
+     * @param player1Name nom du premier joueur
+     * @param player2Name nom du deuxième joueur
+     */
     public void startCanvasGameWithNames(String player1Name, String player2Name) {
         gameStartTime = System.currentTimeMillis(); // Enregistrer le début
 
@@ -311,8 +328,11 @@ public class BombermanApp extends Application {
             showError("Erreur de lancement", "Impossible de démarrer le jeu Canvas: " + e.getMessage());
         }
     }
+
     /**
-     * NOUVELLE MÉTHODE: Met à jour le texte de statut avec les noms personnalisés
+     * Met à jour le texte de statut avec les noms des joueurs et l'état du jeu.
+     * @param player1Name nom du premier joueur
+     * @param player2Name nom du deuxième joueur
      */
     private void updateStatusTextWithNames(String player1Name, String player2Name) {
         if (statusText == null) return;
@@ -363,7 +383,8 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * MÉTHODE COMPLÈTE ET CORRIGÉE: Gestion des touches avec support des noms personnalisés
+     * Gère les événements de touche pressée pendant le jeu.
+     * @param keyCode le code de la touche pressée
      */
     private void handleKeyPress(KeyCode keyCode) {
         if (game.isGameOver()) {
@@ -446,7 +467,9 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Affiche une boîte de dialogue d'erreur
+     * Affiche une boîte de dialogue d'erreur.
+     * @param title titre de la boîte de dialogue
+     * @param message message d'erreur à afficher
      */
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -456,6 +479,10 @@ public class BombermanApp extends Application {
         alert.showAndWait();
     }
 
+    /**
+     * Affiche un retour visuel pour le cooldown des bombes.
+     * @param playerIndex index du joueur concerné
+     */
     private void showCooldownFeedback(int playerIndex) {
         if (game == null || playerIndex >= game.getPlayers().size()) return;
 
@@ -477,6 +504,10 @@ public class BombermanApp extends Application {
         timeline.play();
     }
 
+    /**
+     * Démarre une partie à quatre joueurs.
+     * @param playerNames tableau contenant les noms des quatre joueurs
+     */
     public void startFourPlayerGame(String[] playerNames) {
         try {
             if (playerNames.length > 0) {
@@ -565,6 +596,10 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Gère les événements de touche pressée pour le mode 4 joueurs.
+     * @param keyCode le code de la touche pressée
+     */
     private void handleKeyPressFourPlayers(KeyCode keyCode) {
         if (game.isGameOver()) {
             if (keyCode == KeyCode.R) {
@@ -698,6 +733,9 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Met à jour le texte de statut pour le mode 4 joueurs.
+     */
     private void updateStatusTextFourPlayers() {
         if (statusText == null) return;
 
@@ -741,6 +779,11 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Démarre une partie contre un bot.
+     * @param playerName nom du joueur humain
+     * @param botDifficulty niveau de difficulté du bot (1-3)
+     */
     public void startBotGame(String playerName, int botDifficulty) {
         try {
             PlayerProfile currentProfile = GameModeController.getCurrentGameProfile();
@@ -839,6 +882,10 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Gère les événements de touche pressée pour le mode bot.
+     * @param keyCode le code de la touche pressée
+     */
     private void handleKeyPressBotMode(KeyCode keyCode) {
         if (game.isGameOver()) {
             if (keyCode == KeyCode.R) {
@@ -897,6 +944,9 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Traite les entrées continues du clavier pour le mode bot.
+     */
     private void processContinuousInputBotMode() {
         if (game.isGameOver()) return;
 
@@ -932,6 +982,9 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Met à jour le texte de statut pour le mode bot.
+     */
     private void updateStatusTextBotMode() {
         if (statusText == null) return;
 
@@ -983,6 +1036,11 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Retourne le texte descriptif de la difficulté du bot.
+     * @param difficulty niveau de difficulté du bot
+     * @return une chaîne de caractères décrivant la difficulté
+     */
     private String getBotDifficultyText(int difficulty) {
         switch (difficulty) {
             case 1: return "Facile 😊";
@@ -992,6 +1050,9 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Redémarre une partie à quatre joueurs avec les mêmes joueurs.
+     */
     private void restartFourPlayerGame() {
         if (game == null) return;
 
@@ -1006,6 +1067,10 @@ public class BombermanApp extends Application {
         startFourPlayerGame(names);
     }
 
+    /**
+     * Démarre une partie en mode Capture the Flag.
+     * @param playerNames tableau contenant les noms des joueurs
+     */
     public void startCTFGame(String[] playerNames) {
         try {
             if (playerNames.length > 0) {
@@ -1094,6 +1159,10 @@ public class BombermanApp extends Application {
         }
     }
 
+    /**
+     * Gère les événements de touche pressée pour le mode CTF.
+     * @param keyCode le code de la touche pressée
+     */
     private void handleKeyPressCTF(KeyCode keyCode) {
         // Si on est en phase de placement des drapeaux
         if (game.isInFlagSetupPhase()) {
@@ -1315,6 +1384,9 @@ public class BombermanApp extends Application {
         renderer.render(game);
     }
 
+    /**
+     * Met à jour le texte de statut pour le mode CTF.
+     */
     private void updateStatusTextCTF() {
         if (statusText == null) return;
 
@@ -1386,16 +1458,21 @@ public class BombermanApp extends Application {
                 "\n💀 Joueurs éliminés peuvent encore bombarder | R:Restart T:Thème");
     }
 
-
-
-
-
+    /**
+     * Estime le nombre de bombes posées par un joueur.
+     * @param player le joueur concerné
+     * @return une estimation du nombre de bombes posées
+     */
     private int estimateBombsForPlayer(Player player) {
         // Logique d'estimation basée sur la durée de jeu et l'activité
-        // Dans une version plus avancée, on pourrait tracker cela en temps réel
         return Math.max(1, (int) (Math.random() * 5) + 1);
     }
 
+    /**
+     * Estime le nombre d'éliminations effectuées par un joueur.
+     * @param player le joueur concerné
+     * @return une estimation du nombre d'éliminations
+     */
     private int estimateEliminationsForPlayer(Player player) {
         if (game.getWinner() != null && game.getWinner().equals(player)) {
             // Le gagnant a probablement fait des éliminations
@@ -1404,14 +1481,26 @@ public class BombermanApp extends Application {
         return 0;
     }
 
+    /**
+     * Retourne la fenêtre principale de l'application.
+     * @return la fenêtre principale
+     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    /**
+     * Point d'entrée de l'application.
+     * @param args arguments de la ligne de commande
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Enregistre les statistiques de la partie en cours.
+     * Sauvegarde la durée, le mode de jeu et les performances des joueurs.
+     */
     private void recordGameSessionWithDuration() {
         if (game == null || game.getPlayers().isEmpty()) return;
 
@@ -1470,12 +1559,11 @@ public class BombermanApp extends Application {
     }
 
     /**
-     * Définit le chemin du niveau sélectionné
+     * Définit le chemin du niveau sélectionné.
+     * @param path chemin vers le fichier de niveau
      */
     public void setSelectedLevelPath(String path) {
         this.selectedLevelPath = path;
         System.out.println("🎮 Niveau sélectionné: " + path);
     }
-
-
 }

@@ -5,25 +5,31 @@ import java.util.Objects;
 
 /**
  * Représente une position (coordonnées x,y) sur le plateau.
+ * Cette classe est utilisée pour localiser les éléments du jeu sur le plateau.
  */
 public class Position {
     private int x;
     private int y;
 
+    /**
+     * Constructeur d'une position avec des coordonnées spécifiques.
+     * @param x l'abscisse (coordonnée horizontale)
+     * @param y l'ordonnée (coordonnée verticale)
+     */
     public Position(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
     /**
-     * @return l’abscisse (x)
+     * @return l'abscisse (x)
      */
     public int getX() {
         return x;
     }
 
     /**
-     * @return l’ordonnée (y)
+     * @return l'ordonnée (y)
      */
     public int getY() {
         return y;

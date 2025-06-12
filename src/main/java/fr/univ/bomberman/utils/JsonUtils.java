@@ -13,13 +13,19 @@ import java.nio.file.Files;
 import java.util.Random;
 
 /**
- * Utilitaire pour charger et sauvegarder des données JSON simples (ex. profil utilisateur).
+ * Utilitaire pour charger et sauvegarder des données JSON simples.
  */
 public class JsonUtils {
 
     private static final Random random = new Random();
     private static final double DESTRUCTIBLE_CHANCE = 0.3; // 30% de chance d'avoir un bloc destructible
 
+    /**
+     * Lit et parse un fichier de niveau au format JSON
+     * @param filePath chemin vers le fichier de niveau
+     * @return l'objet JSON contenant les données du niveau
+     * @throws IOException si le fichier ne peut pas être lu
+     */
     public static JSONObject readLevelFile(String filePath) throws IOException {
         String content = new String(Files.readAllBytes(new File(filePath).toPath()));
         return new JSONObject(content);

@@ -10,7 +10,11 @@ import java.util.Random;
 import org.json.JSONObject;
 
 /**
- * Représente le plateau de jeu composé de cellules (murs indestructibles, briques destructibles, vides).
+ * Représente le plateau de jeu de Super Bomberman.
+ * Gère la grille de cellules qui compose le niveau, avec différents types de cellules :
+ * - Murs indestructibles (bordures et motifs)
+ * - Briques destructibles (peuvent être détruites par les bombes)
+ * - Cellules vides (zones de déplacement)
  */
 public class Board {
 
@@ -54,6 +58,12 @@ public class Board {
 
     /**
      * Initialise le plateau en chargeant le niveau depuis le fichier JSON.
+     * Si le chargement échoue, un plateau par défaut est généré.
+     * Le plateau par défaut contient :
+     * - Des murs indestructibles sur les bords
+     * - Un motif de murs indestructibles
+     * - Des briques destructibles placées aléatoirement
+     * - Des zones vides pour les positions de départ des joueurs
      */
     private void initializeBoard() {
         try {
@@ -101,19 +111,20 @@ public class Board {
     /**
      * Vérifie si une position est à l'intérieur des limites du plateau.
      *
-     * @param pos position à vérifier
-     * @return true si dans les limites, false sinon
+     * @param pos La position à vérifier
+     * @return true si la position est dans les limites du plateau, false sinon
      */
     public boolean isWithinBounds(Position pos) {
         return pos.getX() >= 0 && pos.getX() < cols && pos.getY() >= 0 && pos.getY() < rows;
     }
 
     /**
-     * Renvoie la cellule à la position donnée.
+     * Récupère la cellule à une position donnée sur le plateau.
+     * Vérifie d'abord que la position est valide.
      *
-     * @param pos position de la cellule
-     * @return la Cell correspondante
-     * @throws BombermanException si la position est hors limites
+     * @param pos La position de la cellule à récupérer
+     * @return La cellule à la position spécifiée
+     * @throws BombermanException Si la position est hors des limites du plateau
      */
     public Cell getCell(Position pos) throws BombermanException {
         if (!isWithinBounds(pos)) {
@@ -123,11 +134,12 @@ public class Board {
     }
 
     /**
-     * Modifie le type de la cellule à la position spécifiée.
+     * Modifie le type d'une cellule à une position donnée.
+     * Permet de changer une cellule en mur, brique destructible ou cellule vide.
      *
-     * @param pos  position de la cellule
-     * @param type nouveau type à affecter
-     * @throws BombermanException si la position est hors limites
+     * @param pos La position de la cellule à modifier
+     * @param type Le nouveau type de cellule à appliquer
+     * @throws BombermanException Si la position est hors des limites du plateau
      */
     public void setCellType(Position pos, CellType type) throws BombermanException {
         if (!isWithinBounds(pos)) {
@@ -137,14 +149,18 @@ public class Board {
     }
 
     /**
-     * @return le nombre de colonnes du plateau
+     * Récupère le nombre de colonnes du plateau.
+     *
+     * @return Le nombre de colonnes
      */
     public int getCols() {
         return cols;
     }
 
     /**
-     * @return le nombre de lignes du plateau
+     * Récupère le nombre de lignes du plateau.
+     *
+     * @return Le nombre de lignes
      */
     public int getRows() {
         return rows;
