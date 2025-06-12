@@ -37,6 +37,8 @@ public class Game {
 
     /**
      * Constructeur avec fichier de niveau spécifié
+     * Initialise une partie en mode temps réel avec deux joueurs.
+     * @param levelPath chemin vers le fichier de niveau
      */
     public Game(String levelPath) {
         this.gameMode = GameMode.REAL_TIME;
@@ -79,6 +81,8 @@ public class Game {
 
     /**
      * Constructeur avec noms personnalisés et fichier de niveau spécifiés
+     * @param playerNames tableau des noms des joueurs
+     * @param levelPath chemin vers le fichier de niveau
      */
     public Game(String[] playerNames, String levelPath) {
         this(levelPath);
@@ -121,6 +125,9 @@ public class Game {
 
     /**
      * Constructeur pour le mode Capture the Flag avec fichier de niveau spécifié
+     * @param playerNames tableau des noms des joueurs
+     * @param mode mode de jeu
+     * @param levelPath chemin vers le fichier de niveau
      */
     public Game(String[] playerNames, GameMode mode, String levelPath) {
         this(levelPath);
@@ -196,6 +203,9 @@ public class Game {
 
     /**
      * Constructeur pour le mode bot avec fichier de niveau spécifié
+     * @param playerName nom du joueur humain
+     * @param botDifficulty niveau de difficulté du bot (1-3)
+     * @param levelPath chemin vers le fichier de niveau
      */
     public Game(String playerName, int botDifficulty, String levelPath) {
         this(levelPath);
@@ -232,6 +242,9 @@ public class Game {
 
     /**
      * Obtient la position par défaut du drapeau pour un joueur
+     * @param playerIndex index du joueur
+     * @param playerStart position de départ du joueur
+     * @return la position par défaut du drapeau
      */
     private Position getDefaultFlagPosition(int playerIndex, Position playerStart) {
         // Positionner le drapeau à 2-3 cases du spawn du joueur
@@ -246,6 +259,7 @@ public class Game {
 
     /**
      * Vérifie si on est en phase de placement des drapeaux
+     * @return true si on est en phase de placement des drapeaux
      */
     public boolean isInFlagSetupPhase() {
         return flagSetupPhase;
@@ -253,6 +267,7 @@ public class Game {
 
     /**
      * Obtient le joueur en train de placer son drapeau
+     * @return le joueur actuel, ou null si aucun joueur ne place de drapeau
      */
     public Player getCurrentPlayerSettingFlag() {
         if (flagSetupPhase && currentPlayerSettingFlag < players.size()) {
@@ -263,6 +278,9 @@ public class Game {
 
     /**
      * Place le drapeau du joueur actuel à la position spécifiée
+     * @param position position où placer le drapeau
+     * @return true si le drapeau a été placé avec succès
+     * @throws BombermanException si le placement est invalide
      */
     public boolean placeFlagAt(Position position) throws BombermanException {
         if (!flagSetupPhase) {
@@ -302,6 +320,8 @@ public class Game {
 
     /**
      * Valide qu'une position est appropriée pour un drapeau
+     * @param position position à valider
+     * @return true si la position est valide pour un drapeau
      */
     private boolean isValidFlagPosition(Position position) {
         try {
@@ -618,6 +638,10 @@ public class Game {
                 .orElse(null);
     }
 
+    /**
+     * Libère la zone de départ d'un joueur.
+     * @param center position centrale de la zone à libérer
+     */
     private void clearStartingArea(Position center) {
         try {
             for (int dx = -1; dx <= 1; dx++) {
@@ -634,21 +658,24 @@ public class Game {
     }
 
     /**
-     * @return le nombre de joueurs dans la partie
+     * Retourne le nombre de joueurs dans la partie.
+     * @return le nombre de joueurs
      */
     public int getPlayerCount() {
         return players.size();
     }
 
     /**
-     * @return le nombre de joueurs encore vivants
+     * Retourne le nombre de joueurs encore vivants.
+     * @return le nombre de joueurs vivants
      */
     public int getAlivePlayerCount() {
         return (int) players.stream().filter(p -> !p.isEliminated()).count();
     }
 
     /**
-     * @return le mode de jeu actuel
+     * Retourne le mode de jeu actuel.
+     * @return le mode de jeu
      */
     public GameMode getGameMode() {
         return gameMode;
@@ -657,35 +684,40 @@ public class Game {
 
 
     /**
-     * @return le plateau de jeu (Board)
+     * Retourne le plateau de jeu.
+     * @return le plateau de jeu
      */
     public Board getBoard() {
         return board;
     }
 
     /**
-     * @return le joueur dont c'est actuellement le tour
+     * Retourne le joueur dont c'est actuellement le tour.
+     * @return le joueur actuel
      */
     public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
     }
 
     /**
-     * @return la liste des joueurs
+     * Retourne la liste des joueurs.
+     * @return une copie de la liste des joueurs
      */
     public List<Player> getPlayers() {
         return new ArrayList<>(players);
     }
 
     /**
-     * @return la liste des bombes actives
+     * Retourne la liste des bombes actives.
+     * @return une copie de la liste des bombes actives
      */
     public List<Bomb> getActiveBombs() {
         return new ArrayList<>(activeBombs);
     }
 
     /**
-     * @return la liste des explosions actives
+     * Retourne la liste des explosions actives.
+     * @return une copie de la liste des explosions actives
      */
     public List<Explosion> getActiveExplosions() {
         return new ArrayList<>(activeExplosions);
@@ -694,7 +726,11 @@ public class Game {
 
 
     /**
-     * ✅ MÉTHODE MODIFIÉE : Déplacement avec gestion des drapeaux
+     * Déplace un joueur dans une direction donnée.
+     * @param playerIndex index du joueur à déplacer
+     * @param dx déplacement horizontal
+     * @param dy déplacement vertical
+     * @throws BombermanException si le déplacement est invalide
      */
     public void movePlayer(int playerIndex, int dx, int dy) throws BombermanException {
         if (gameOver) {
@@ -743,7 +779,9 @@ public class Game {
     }
 
     /**
-     * ✅ MÉTHODE MODIFIÉE : Placement de bombe avec support CTF
+     * Place une bombe pour un joueur spécifique
+     * @param playerIndex index du joueur
+     * @throws BombermanException si le placement est invalide
      */
     public void placeBombForPlayer(int playerIndex) throws BombermanException {
         if (isGameOver()) {

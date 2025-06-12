@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Représente un joueur dans la partie.
+ * Un joueur peut se déplacer, poser des bombes et interagir avec les éléments du jeu.
  */
 public class Player {
     private String name;
@@ -21,6 +22,11 @@ public class Player {
     private List<String> capturedFlags; // Drapeaux capturés par ce joueur
     private boolean canPlaceBombWhenEliminated; // Peut poser des bombes même éliminé en mode CTF
 
+    /**
+     * Constructeur d'un joueur avec un nom et une position initiale.
+     * @param name le nom du joueur
+     * @param position la position initiale sur le plateau
+     */
     public Player(String name, Position position) {
         this.name = name;
         this.position = position;
@@ -32,6 +38,7 @@ public class Player {
     }
 
     /**
+     * Retourne le nom du joueur.
      * @return le nom du joueur
      */
     public String getName() {
@@ -39,7 +46,8 @@ public class Player {
     }
 
     /**
-     * @return la position actuelle du joueur
+     * Retourne la position actuelle du joueur sur le plateau.
+     * @return la position actuelle
      */
     public Position getPosition() {
         return position;
@@ -47,24 +55,23 @@ public class Player {
 
     /**
      * Définit une nouvelle position pour le joueur.
-     *
-     * @param position nouvelle position
+     * @param position nouvelle position sur le plateau
      */
     public void setPosition(Position position) {
         this.position = position;
     }
 
     /**
+     * Retourne le nombre de bombes que le joueur peut encore poser.
      * @return le nombre de bombes restantes
      */
     public int getRemainingBombs() {
         return remainingBombs;
     }
 
-
-
     /**
-     * @return true si le joueur est éliminé
+     * Vérifie si le joueur est éliminé de la partie.
+     * @return true si le joueur est éliminé, false sinon
      */
     public boolean isEliminated() {
         return eliminated;
@@ -72,17 +79,12 @@ public class Player {
 
     /**
      * Marque le joueur comme éliminé ou non.
-     *
-     * @param eliminated état d'élimination
+     * @param eliminated true pour éliminer le joueur, false sinon
      */
     public void setEliminated(boolean eliminated) {
         this.eliminated = eliminated;
     }
-
-
-
-
-
+    
     /**
      * Définit le nom du joueur
      *
@@ -92,6 +94,10 @@ public class Player {
         this.name = name;
     }
 
+    /**
+     * Vérifie si le joueur peut poser une bombe en fonction du temps écoulé depuis la dernière.
+     * @return true si le joueur peut poser une bombe, false sinon
+     */
     public boolean canPlaceBomb() {
         long currentTime = System.nanoTime();
         boolean cooldownReady = (currentTime - lastBombTime) >= BOMB_COOLDOWN;
@@ -149,8 +155,6 @@ public class Player {
     }
 
     // === NOUVELLES MÉTHODES POUR LE MODE CTF ===
-
-
 
     /**
      * Ajoute un drapeau capturé à la liste

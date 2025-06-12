@@ -23,6 +23,12 @@ public class BotPlayer extends Player {
     private long lastPlayerSeen = 0;
     private boolean playerInRange = false;
 
+    /**
+     * Constructeur d'un bot avec un nom, une position et un niveau de difficulté.
+     * @param name le nom du bot
+     * @param position la position initiale sur le plateau
+     * @param difficulty le niveau de difficulté (1-3)
+     */
     public BotPlayer(String name, Position position, int difficulty) {
         super(name, position);
         this.random = new Random();
@@ -49,7 +55,9 @@ public class BotPlayer extends Player {
     }
 
     /**
-     * ✅ MÉTHODE PRINCIPALE MODIFIÉE: Le bot devient un chasseur agressif
+     * Détermine la prochaine action du bot en fonction de l'état du jeu.
+     * @param game l'état actuel du jeu
+     * @return l'action que le bot va effectuer
      */
     public BotAction decideAction(Game game) {
         if (isEliminated()) {
@@ -181,8 +189,6 @@ public class BotPlayer extends Player {
             System.out.println("🚫 " + getName() + " : cul-de-sac détecté, pas de bombe !");
             return false;
         }
-
-
 
         // Vérifier s'il y a des briques destructibles dans le chemin direct
         List<Position> bricksInPath = findBricksInDirectPath(myPos, playerPos, game);
@@ -391,8 +397,6 @@ public class BotPlayer extends Player {
     private BotAction tryHuntPlayer(Game game) {
         Position playerPos = findNearestPlayer(game);
         if (playerPos == null) return BotAction.NONE;
-
-
 
         // ALGORITHME DE POURSUITE DIRECTE (style fantôme Pac-Man)
         BotAction directMove = findDirectPathToPlayer(game, playerPos);
@@ -859,9 +863,10 @@ public class BotPlayer extends Player {
         return nearest;
     }
 
-
-
-
+    /**
+     * Retourne le niveau de difficulté du bot.
+     * @return le niveau de difficulté (1-3)
+     */
     public int getDifficulty() {
         return difficulty;
     }

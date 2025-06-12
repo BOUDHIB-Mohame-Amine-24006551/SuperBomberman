@@ -26,9 +26,6 @@ public class Bomb {
         this.exploded = false;
     }
 
-
-
-
     /**
      * Retourne la coordonnée X de la bombe
      * @return position X
@@ -46,12 +43,12 @@ public class Bomb {
     }
 
     /**
+     * Retourne la position complète de la bombe
      * @return la position de la bombe
      */
     public Position getPosition() {
         return position;
     }
-
 
     /**
      * Décrémente le timer de la bombe et marque comme explosée si timer atteint 0.
@@ -73,6 +70,7 @@ public class Bomb {
     }
 
     /**
+     * Retourne le temps restant avant l'explosion
      * @return le temps restant avant explosion
      */
     public int getTimer() {
