@@ -1,5 +1,6 @@
 # SuperBomberman
 
+
 ## Lancement du jeu
 
 Sauf indication contraire, le jeu se lance grâce à la classe `BombermanApp` au chemin suivant :  
@@ -145,6 +146,14 @@ Des **tutoriels interactifs** sont disponibles dans le jeu :
 - Pour le **mode Capture the Flag**
 
 ➡️ Accès via les **boutons dédiés** dans les menus.
+
+---
+
+## En cas de problème
+
+Si vous rencontrez des problèmes, il est conseillé de vous diriger vers la branche **`MohamedAmine`** du dépôt.  
+Vous pouvez soit la **cloner**, soit **télécharger l'archive ZIP** depuis cette branche pour disposer d'une version stable.
+
 
 Bon jeu a tous ! 
 
